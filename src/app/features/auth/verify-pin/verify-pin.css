@@ -1,0 +1,508 @@
+:root {
+  --bg-dark: #050505;
+  --primary-amber: #ffb800;
+  --primary-orange: #ff8c00;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: #000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  min-height: 100vh;
+  color: white;
+}
+
+/* BACKGROUND PREMIUM */
+.bg-animation {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.88)),
+    url("/assets/images/bamafood_splash.png");
+  background-size: cover;
+  background-position: center;
+  animation: bgZoom 18s infinite alternate ease-in-out;
+}
+
+.bg-animation::before {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 184, 0, 0.15), transparent 70%);
+  top: -200px;
+  left: -150px;
+  animation: moveGlow 12s infinite alternate ease-in-out;
+  filter: blur(8px);
+}
+
+.bg-animation::after {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 140, 0, 0.12), transparent 70%);
+  bottom: -200px;
+  right: -100px;
+  animation: moveGlow2 10s infinite alternate ease-in-out;
+  filter: blur(8px);
+}
+
+/* PARTICLES */
+.particles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.particles span {
+  position: absolute;
+  bottom: -150px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: gold;
+  box-shadow: 0 0 10px gold, 0 0 20px orange;
+  animation: floatParticles linear infinite;
+}
+
+.particles span:nth-child(1) { left: 10%; width: 4px; height: 4px; animation-duration: 8s; animation-delay: 0s; }
+.particles span:nth-child(2) { left: 20%; width: 6px; height: 6px; animation-duration: 12s; animation-delay: 2s; }
+.particles span:nth-child(3) { left: 35%; width: 3px; height: 3px; animation-duration: 10s; animation-delay: 1s; }
+.particles span:nth-child(4) { left: 50%; width: 7px; height: 7px; animation-duration: 14s; animation-delay: 3s; }
+.particles span:nth-child(5) { left: 65%; width: 5px; height: 5px; animation-duration: 11s; animation-delay: 4s; }
+.particles span:nth-child(6) { left: 75%; width: 4px; height: 4px; animation-duration: 9s; animation-delay: 2s; }
+.particles span:nth-child(7) { left: 85%; width: 6px; height: 6px; animation-duration: 13s; animation-delay: 5s; }
+.particles span:nth-child(8) { left: 95%; width: 3px; height: 3px; animation-duration: 10s; animation-delay: 1s; }
+.particles span:nth-child(9) { left: 45%; width: 5px; height: 5px; animation-duration: 12s; animation-delay: 6s; }
+.particles span:nth-child(10) { left: 30%; width: 4px; height: 4px; animation-duration: 9s; animation-delay: 3s; }
+
+/* CONTAINER */
+.pin-lock-container {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* CARD */
+.pin-card {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  padding: 42px 34px;
+  text-align: center;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(255, 184, 0, 0.1);
+  overflow: hidden;
+  animation: fadeInCard 0.8s ease forwards;
+}
+
+.pin-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: 28px;
+  background: linear-gradient(135deg,
+    rgba(255, 184, 0, 0.5),
+    transparent,
+    rgba(255, 140, 0, 0.45));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* BRAND */
+.brand-header {
+  margin-bottom: 28px;
+}
+
+.brand-title {
+  font-size: 46px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 2px;
+  margin: 0 0 8px 0;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+}
+
+.brand-title span {
+  background: linear-gradient(135deg, #ffb800, #ffd700, #ff8c00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 184, 0, 0.5);
+}
+
+.badge-admin {
+  display: inline-block;
+  background: rgba(255, 184, 0, 0);
+  color: var(--primary-amber);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.6px;
+  border: 1px solid rgba(255, 184, 0, 0.14);
+}
+
+/* INSTRUCTIONS */
+.pin-instructions {
+  margin-bottom: 28px;
+}
+
+.lock-icon-wrap {
+  color: var(--primary-amber);
+  font-size: 30px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 18px rgba(255, 184, 0, 0.35);
+}
+
+.pin-instructions h4 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.pin-instructions .text-muted {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65) !important;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* DOTS */
+.dots-container {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dot.filled {
+  background: var(--primary-amber);
+  border-color: var(--primary-amber);
+  transform: scale(1.18);
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.55);
+}
+
+/* KEYPAD */
+.numeric-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.key-btn {
+  background: rgba(24, 24, 24, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.22s ease;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.key-btn:hover {
+  background: rgba(255, 184, 0, 0.15);
+  transform: scale(1.05);
+  border-color: rgba(255, 184, 0, 0.2);
+}
+
+.key-btn:active {
+  background: linear-gradient(135deg, var(--primary-amber), var(--primary-orange));
+  color: black;
+  transform: scale(0.95);
+}
+
+.action-key {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  box-shadow: none;
+}
+
+.text-gold {
+  color: var(--primary-amber);
+}
+
+.text-muted {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* STATUS */
+.attempts-indicator {
+  margin-top: 22px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ff6b5f;
+}
+
+.error-msg-box {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #ff6b5f;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* LOCKOUT */
+.lockout-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 5, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 3000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.lockout-card {
+  background: var(--glass-bg);
+  border: 1px solid rgba(231, 76, 60, 0.35);
+  border-radius: 28px;
+  max-width: 400px;
+  width: 100%;
+  padding: 38px 30px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(231, 76, 60, 0.12);
+  animation: fadeInCard 0.5s ease forwards;
+}
+
+.lockout-icon {
+  color: #e74c3c;
+  font-size: 46px;
+  margin-bottom: 18px;
+  animation: pulse 1.5s infinite;
+}
+
+.lockout-card h3 {
+  font-size: 19px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+}
+
+.lockout-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+.timer-box {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 3px solid rgba(231, 76, 60, 0.2);
+  border-top-color: #e74c3c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px auto;
+  animation: spin 1s linear infinite;
+}
+
+.timer-box span {
+  font-size: 22px;
+  font-weight: 800;
+  color: #e74c3c;
+}
+
+.lockout-footer {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.42);
+  margin: 0;
+}
+
+/* ANIMATIONS */
+.shake-animation {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bgZoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+@keyframes moveGlow {
+  from { transform: translate(0, 0); }
+  to { transform: translate(120px, 80px); }
+}
+
+@keyframes moveGlow2 {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-100px, -60px); }
+}
+
+@keyframes floatParticles {
+  0% { transform: translateY(0) scale(0.3); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(-120vh) scale(1); opacity: 0; }
+}
+
+/* ALERT */
+.alert-warning {
+  background: rgba(255, 140, 0, 0.15) !important;
+  border: 1px solid rgba(255, 184, 0, 0.4) !important;
+  color: #ffb800 !important;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  animation: slideDown 0.4s ease forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .pin-lock-container {
+    padding: 12px;
+    align-items: flex-start;
+    padding-top: 22px;
+  }
+
+  .pin-card {
+    max-width: 94%;
+    padding: 30px 22px;
+    border-radius: 24px;
+  }
+
+  .brand-title {
+    font-size: 34px;
+  }
+
+  .pin-instructions {
+    margin-bottom: 22px;
+  }
+
+  .numeric-keypad {
+    gap: 12px;
+    max-width: 240px;
+  }
+
+  .key-btn {
+    height: 54px;
+    font-size: 20px;
+  }
+
+  .dots-container {
+    margin-bottom: 26px;
+    gap: 12px;
+  }
+
+  .lockout-card {
+    padding: 30px 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pin-card {
+    max-width: 96%;
+    padding: 26px 18px;
+    border-radius: 22px;
+  }
+
+  .brand-title {
+    font-size: 28px;
+  }
+
+  .pin-instructions h4 {
+    font-size: 16px;
+  }
+
+  .pin-instructions .text-muted {
+    font-size: 11px;
+  }
+
+  .numeric-keypad {
+    gap: 10px;
+    max-width: 220px;
+  }
+
+  .key-btn {
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .lockout-icon {
+    font-size: 40px;
+  }
+
+  .timer-box {
+    width: 74px;
+    height: 74px;
+  }
+}

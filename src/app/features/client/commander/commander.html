@@ -1,0 +1,241 @@
+<div class="container-fluid py-4 px-md-5">
+
+  <div *ngIf="isLoading; else commanderContent" class="skeleton-grid">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]">
+      <div class="skeleton-image"></div>
+      <div class="skeleton-content">
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+        <div class="skeleton-line price"></div>
+        <div class="skeleton-btn"></div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #commanderContent>
+    <div class="mb-4">
+      <a routerLink="/client/dashboard" class="text-decoration-none small fw-bold text-gold" style="cursor: pointer;">
+        <i class="bi bi-arrow-left me-2"></i> Retour au tableau de bord
+      </a>
+    </div>
+
+    <button class="btn btn-view-ticket-mobile"
+        (click)="showMobileTicket = true"
+        [class.visible]="ticket.length > 0"
+        [disabled]="ticket.length === 0">
+  <i class="bi bi-receipt me-2"></i> Voir le ticket
+</button>
+
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <h1 class="h3 fw-bold mb-4 text-white">Faites votre choix 🍔</h1>
+
+        <div class="food-toolbar mb-4">
+          <div class="food-search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" [(ngModel)]="searchFilter" placeholder="Rechercher un plat...">
+          </div>
+
+          <div class="food-categories">
+            <button class="category-btn" [class.active]="currentCategory === 'all'" (click)="setCategory('all')">
+              Tous
+            </button>
+            <button *ngFor="let cat of categories"
+                    class="category-btn"
+                    [class.active]="currentCategory === (cat | lowercase)"
+                    (click)="setCategory(cat)">
+              {{ cat }}
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-sm-6 col-lg-3" *ngFor="let food of filteredFoods">
+            <div class="food-order-card premium-card h-100 d-flex flex-column">
+              <div class="food-image-wrap position-relative">
+  <img [src]="food.imageUrl" class="img-fluid w-100 food-img" [alt]="food.name">
+
+  <button
+    class="btn btn-favorite btn-sm fav-overlay-btn"
+    [class.active]="isFavorite(food.id)"
+    (click)="toggleFavorite(food)">
+    <i class="bi" [ngClass]="isFavorite(food.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
+  </button>
+
+  <span *ngIf="food.isPopular" class="category-tag">Populaire</span>
+</div>
+
+              <div class="p-3 d-flex flex-column flex-grow-1">
+                <div class="mb-3">
+                  <h3 class="h6 fw-bold text-white mb-1 text-truncate">{{ food.name }}</h3>
+                  <p class="text-gold fw-bold mb-0">{{ food.price }} FCFA</p>
+                </div>
+
+                <div class="ticket-action-wrap">
+                  <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-add-ticket btn-sm flex-grow-1" (click)="addItemToTicket(food)">
+                      <i class="bi bi-ticket-perforated me-1"></i> Ajouter au ticket
+                    </button>
+                  </div>
+
+                  <div class="mini-success" *ngIf="lastAddedFoodId === food.id">
+                    <i class="bi bi-check-circle-fill me-1"></i> Plat ajouté
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="filteredFoods.length === 0">
+          <div class="col-12 text-center py-5">
+            <div class="premium-panel empty-state">
+              <i class="bi bi-emoji-frown fs-1 text-muted mb-3 d-block"></i>
+              <p class="text-muted mb-0">Aucun plat disponible pour le moment.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-4 d-none d-xl-block">
+        <div class="ticket-container premium-ticket p-4 d-flex flex-column">
+          <div>
+            <div class="text-center ticket-header mb-4 pb-3">
+              <h2 class="h5 fw-bold mb-1 tracking-wider text-white">
+                BAMA<span class="text-gold">FOOD</span>
+              </h2>
+              <p class="small text-muted mb-0">TICKET DE COMMANDE EN TEMPS RÉEL</p>
+              <div class="ticket-line mt-3"></div>
+            </div>
+
+            <div *ngIf="ticket.length === 0" class="ticket-body mb-4">
+              <div class="text-center text-muted py-5 empty-ticket-msg">
+                <i class="bi bi-receipt mb-2 d-block" style="font-size: 36px;"></i>
+                <p class="small mb-0">Votre ticket est vide.<br>Cliquez sur un plat pour commencer.</p>
+              </div>
+            </div>
+
+            <div *ngIf="ticket.length > 0" class="ticket-body mb-4">
+              <div class="ticket-item" *ngFor="let item of ticket">
+                <div style="max-width: 60%;">
+                  <span class="fw-bold small text-white d-block">{{ item.name }}</span>
+                  <span class="text-muted small">{{ item.price }} FCFA / u</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                  <div class="qty-control">
+                    <button class="qty-btn" (click)="changeQty(item.id, -1)">
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <span class="px-2 small fw-bold text-white">{{ item.quantity }}</span>
+                    <button class="qty-btn" (click)="changeQty(item.id, 1)">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+
+                  <span class="small fw-bold text-gold" style="min-width: 75px; text-align: right;">
+                    {{ item.price * item.quantity }} F
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-footer pt-3 mt-auto">
+            <div class="ticket-line mb-3"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <span class="fw-bold text-muted text-uppercase small tracking-wider">Total estimé</span>
+              <h3 class="h4 mb-0 fw-bold text-gold">{{ totalEstimated }} FCFA</h3>
+            </div>
+
+            <button
+              class="w-100 py-3 btn-submit-order border-0 fw-bold"
+              [disabled]="ticket.length === 0"
+              (click)="sendToCart()">
+              <i class="bi bi-cart-plus-fill me-2"></i> Envoyer au panier
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
+
+<div class="custom-modal-backdrop" *ngIf="showMobileTicket">
+  <div class="mobile-ticket-modal premium-ticket">
+    <div class="ticket-container p-4 d-flex flex-column mb-0">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 ticket-header">
+        <h2 class="h5 fw-bold mb-0 tracking-wider text-white">
+          BAMA<span class="text-gold">FOOD</span>
+        </h2>
+        <button type="button" class="btn-close btn-close-white" (click)="showMobileTicket = false"></button>
+      </div>
+
+      <div *ngIf="ticket.length === 0" class="ticket-body mb-4">
+        <div class="text-center text-muted py-5 empty-ticket-msg">
+          <i class="bi bi-receipt mb-2 d-block" style="font-size: 36px;"></i>
+          <p class="small mb-0">Votre ticket est vide.<br>Cliquez sur un plat pour commencer.</p>
+        </div>
+      </div>
+
+      <div *ngIf="ticket.length > 0" class="ticket-body mb-4">
+        <div class="ticket-item" *ngFor="let item of ticket">
+          <div style="max-width: 60%;">
+            <span class="fw-bold small text-white d-block">{{ item.name }}</span>
+            <span class="text-muted small">{{ item.price }} FCFA / u</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3">
+            <div class="qty-control">
+              <button class="qty-btn" (click)="changeQty(item.id, -1)">
+                <i class="bi bi-dash"></i>
+              </button>
+              <span class="px-2 small fw-bold text-white">{{ item.quantity }}</span>
+              <button class="qty-btn" (click)="changeQty(item.id, 1)">
+                <i class="bi bi-plus"></i>
+              </button>
+            </div>
+
+            <span class="small fw-bold text-gold" style="min-width: 75px; text-align: right;">
+              {{ item.price * item.quantity }} F
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticket-footer pt-3 mt-auto">
+        <div class="ticket-line mb-3"></div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <span class="fw-bold text-muted text-uppercase small tracking-wider">Total estimé</span>
+          <h3 class="h4 mb-0 fw-bold text-gold">{{ totalEstimated }} FCFA</h3>
+        </div>
+
+        <button
+          class="w-100 py-3 btn-submit-order border-0 fw-bold"
+          [disabled]="ticket.length === 0"
+          (click)="sendToCart()">
+          <i class="bi bi-cart-plus-fill me-2"></i> Envoyer au panier
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="custom-modal-backdrop" *ngIf="showSuccessModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+      <div class="modal-body">
+        <div class="success-icon-wrap mb-3 mx-auto">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <h3 class="h4 fw-bold text-white mb-2">Plats ajoutés au panier !</h3>
+        <p class="text-muted small mb-0 px-3">
+          Merci de valider votre commande dans votre panier pour qu'elle soit immédiatement prise en charge par nos cuisines. 🙏
+        </p>
+        <div class="progress-bar-timeout mt-4"></div>
+      </div>
+    </div>
+  </div>
+</div>

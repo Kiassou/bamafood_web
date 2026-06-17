@@ -1,0 +1,332 @@
+:host {
+    --dark: #0a0a0a;
+    --card: #111111;
+    --gold: #ffb800;
+    --orange: #ff8c00;
+    display: flex;
+    background: var(--dark);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* CONTAINER PRINCIPAL */
+.main-content {
+  width: 100%;
+  padding: 35px;
+  flex-grow: 1;
+}
+
+/* ----------------------------------------------------------------- */
+/* ZONE DES 6 CARTES STATISTIQUES - ÉQUIVALENT CLIENT              */
+/* ----------------------------------------------------------------- */
+
+/* Conteneur global des 6 cartes */
+.orders-stats-cards {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 3 colonnes sur desktop */
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+/* Carte individuelle */
+.stat-card {
+  background: var(--card);
+  padding: 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Hover : zoom + highlight */
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Filtre actif : background gold + bordure gold */
+.stat-card.active-filter {
+  background: rgba(255, 184, 0, 0.12);
+  border-color: var(--gold) !important;
+}
+
+/* Colonne de gauche (TOUTES, EN CUISINE, LIVRÉES) */
+.stat-card.all,
+.stat-card.preparing,
+.stat-card.delivered {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+/* Colonne de droite (EN ATTENTE, EN LIVRAISON, ANNULÉES) */
+.stat-card.pending,
+.stat-card.shipping,
+.stat-card.canceled {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+/* Icônes des cartes */
+.stat-card i {
+  font-size: 28px;
+  margin-bottom: 6px;
+  transition: transform 0.3s ease;
+}
+.stat-card:hover i {
+  transform: scale(1.15);
+}
+
+/* Couleurs des icônes selon le statut */
+.stat-card.all i { color: var(--gold); }
+.stat-card.pending i { color: var(--orange); }
+.stat-card.preparing i { color: #007bff; }
+.stat-card.shipping i { color: #17a2b8; }
+.stat-card.delivered i { color: #2ecc71; }
+.stat-card.canceled i { color: #e74c3c; }
+
+/* Chiffres (counts) */
+.stat-card h3 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0;
+}
+
+/* Label */
+.stat-card p {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* RESPONSIVE MOBILE */
+@media (max-width: 768px) {
+  .orders-stats-cards {
+    grid-template-columns: repeat(2, 1fr); /* 2x2 sur tablette */
+  }
+}
+@media (max-width: 480px) {
+  .orders-stats-cards {
+    grid-template-columns: repeat(1, 1fr); /* 1 colonne sur mobile */
+  }
+  .stat-card {
+    padding: 20px;
+  }
+  .stat-card i {
+    font-size: 24px;
+  }
+  .stat-card h3 {
+    font-size: 22px;
+  }
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.topbar-left h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.topbar-left p {
+  color: #888;
+  font-size: 14px;
+  margin: 0;
+}
+
+.menu-toggle {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 14px;
+  background: var(--card);
+  color: white;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.menu-toggle:hover {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: black;
+}
+
+/* BARRE DE FILTRES PILULES CHIC */
+.orders-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-btn {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  color: #888;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: #181818;
+  color: white;
+}
+
+.filter-btn.active {
+  background: rgba(255, 184, 0, 0.1);
+  color: var(--gold) !important;
+  border-color: var(--gold);
+}
+
+/* CARTES DES COMMANDES INDIVIDUELLES */
+.order-card {
+  background: var(--card);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.border-completed {
+  border-color: rgba(46, 204, 113, 0.15) !important;
+}
+
+.header-divider {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.extreme-small {
+  font-size: 11px;
+}
+
+/* BADGES DE STATUT IDENTIQUES AU CLIENT */
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-pending { background: rgba(255, 184, 0, 0.12); color: var(--gold); }
+.status-preparing { background: rgba(0, 123, 255, 0.12); color: #007bff; }
+.status-shipping { background: rgba(23, 162, 184, 0.12); color: #17a2b8; }
+.status-delivered { background: rgba(46, 204, 113, 0.12); color: #2ecc71; }
+.status-canceled { background: rgba(231, 76, 60, 0.12); color: #e74c3c; }
+
+.gold-text {
+  color: var(--gold);
+}
+
+.icon-container {
+  background: #181818 !important;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.bag-icon {
+  color: var(--gold);
+  font-size: 20px;
+}
+
+/* BOUTONS ACTIONS DE PILOTAGE */
+.btn-preparing {
+  background: rgba(255, 184, 0, 0.1);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  font-weight: 700;
+}
+.btn-preparing:hover {
+  background: var(--gold);
+  color: black;
+}
+
+.btn-rider {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  border: none;
+  font-weight: 700;
+}
+.btn-rider:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.25);
+}
+
+.btn-success {
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+  border: 1px solid #2ecc71;
+  font-weight: 700;
+}
+.btn-success:hover {
+  background: #2ecc71;
+  color: black;
+}
+
+.btn-outline-danger {
+  background: none;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  color: #e74c3c;
+  cursor: pointer;
+}
+.btn-outline-danger:hover {
+  background: #e74c3c;
+  color: white;
+}
+
+/* SKELETON ANIMATIONS */
+.skeleton-box {
+  background: linear-gradient(90deg, #111111 25%, #1a1a1a 50%, #111111 75%);
+  background-size: 200% 100%;
+  animation: shimmerEffect 1.5s infinite linear;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+@keyframes shimmerEffect {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animated-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 20px;
+margin-bottom: 30px;
+
+}
+

@@ -1,0 +1,273 @@
+<main class="main-content">
+  
+  <!-- BARRE SUPÉRIEURE DE NAVIGATION -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" (click)="backToDashboard()" title="Retour au tableau de bord">
+        <i class="bi bi-arrow-left-circle"></i>
+      </button>
+      <div>
+        <h2>Administration des Comptes</h2>
+        <p>Gérez les autorisations, le personnel de BamaFood, les livreurs et les clients 🔥</p>
+      </div>
+    </div>
+    
+    <!-- Bouton de verrouillage rapide de la console administrative -->
+    <div class="topbar-right">
+
+      <button class="btn-lock" (click)="lockConsole()" title="Verrouiller l'accès de l'écran">
+        <i class="bi bi-lock-fill"></i> <span>Verrouiller</span>
+      </button>
+      
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS DE REQUÊTE OU ERREURS -->
+  <div *ngIf="errorMessage" class="alert alert-danger bama-alert animated-fade-in" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success bama-alert-success animated-fade-in" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i> {{ successMessage }}
+  </div>
+
+  <!-- CHARGEMENT VISUEL (SKELETONS EFFECT) -->
+  <div *ngIf="isLoading" class="manager-skeleton-container">
+    <div class="stats-grid">
+      <div class="skeleton-box" style="height: 140px; border-radius: 24px;" *ngFor="let s of [1,2,3,4]"></div>
+    </div>
+    <div class="skeleton-box mt-4" style="height: 350px; border-radius: 24px;"></div>
+  </div>
+
+  <!-- CONTENU PRINCIPAL SÉCURISÉ -->
+  <div *ngIf="!isLoading" class="animated-fade-in">
+
+    <!-- LES 4 CARTES STATISTIQUES FILTRABLES -->
+    <div class="stats-grid mb-5">
+      
+      <!-- CARTE 1 : TOUS -->
+      <div class="stat-card cursor-pointer all" [class.active-filter]="currentFilter === 'all'" (click)="setRoleFilter('all')">
+        <i class="bi bi-people-fill"></i>
+        <h3>{{ totalCount }}</h3>
+        <p>Tout le personnel</p>
+        <span class="click-indicator">Sélectionné</span>
+      </div>
+
+      <!-- CARTE 2 : GÉRANTS -->
+      <div class="stat-card cursor-pointer manager" [class.active-filter]="currentFilter === 'GERANT'" (click)="setRoleFilter('GERANT')">
+        <i class="bi bi-person-badge-fill"></i>
+        <h3>{{ managerCount }}</h3>
+        <p>Gérants</p>
+        <span class="click-indicator">Filtrer</span>
+      </div>
+
+      <!-- CARTE 3 : LIVREURS -->
+      <div class="stat-card cursor-pointer rider" [class.active-filter]="currentFilter === 'LIVREUR'" (click)="setRoleFilter('LIVREUR')">
+        <i class="bi bi-truck"></i>
+        <h3>{{ riderCount }}</h3>
+        <p>Livreurs</p>
+        <span class="click-indicator">Filtrer</span>
+      </div>
+
+      <!-- CARTE 4 : CLIENTS -->
+      <div class="stat-card cursor-pointer client" [class.active-filter]="currentFilter === 'CLIENT'" (click)="setRoleFilter('CLIENT')">
+        <i class="bi bi-person-fill"></i>
+        <h3>{{ clientCount }}</h3>
+        <p>Clients</p>
+        <span class="click-indicator">Filtrer</span>
+      </div>
+
+    </div>
+
+
+    <!-- BARRE DE RECHERCHE & PILULES DE FILTRES RAPIDES -->
+    <div class="action-control-panel-bar mb-4">
+      
+      <!-- Boîtier recherche -->
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" 
+               placeholder="Rechercher par nom, téléphone, e-mail, identifiant..." 
+               [(ngModel)]="searchQuery" 
+               (input)="onSearchChange()">
+      </div>
+
+
+      <!-- Pilules d'ajustement -->
+      <div class="pill-filters-group">
+        <button class="pill-btn" [class.active]="currentFilter === 'all'" (click)="setRoleFilter('all')">Tous</button>
+        <button class="pill-btn" [class.active]="currentFilter === 'GERANT'" (click)="setRoleFilter('GERANT')">Gérants</button>
+        <button class="pill-btn" [class.active]="currentFilter === 'LIVREUR'" (click)="setRoleFilter('LIVREUR')">Livreurs</button>
+        <button class="pill-btn" [class.active]="currentFilter === 'CLIENT'" (click)="setRoleFilter('CLIENT')">Clients</button>
+      </div>
+
+    </div>
+
+        <!-- Bouton annonce globale -->
+    <div class="mb-2 d-flex justify-content-end">
+      <button class="btn-lock" (click)="showBroadcastModal = true">
+        <i class="bi bi-megaphone-fill"></i> Annonce Globale
+      </button>
+    </div>
+
+
+    <!-- TABLEAU DE CONTRÔLE DES COMPTES -->
+    <div class="table-container-card">
+      <div class="table-responsive">
+        <table class="bama-admin-table">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Changer le Rôle</th>
+              <th>Téléphone / Email</th>
+              <th>Statut du compte</th>
+              <th class="text-end">Actions Administrateur</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers" [class.blocked-row-danger]="user.is_blocked">
+              
+              <!-- Identité de l'utilisateur (Avatar initials) -->
+              <td>
+                <div class="user-identity-box">
+                  <div class="avatar-initials" [class.gerant-avatar]="user.role === 'GERANT'">
+                    {{ user.avatar }}
+                  </div>
+                  <div class="identity-info">
+                    <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                    <p>&#64;{{ user.username }}</p>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Menu déroulant pour modifier le rôle de l'utilisateur à chaud -->
+              <td>
+                <div class="custom-select-wrapper">
+                  <select [value]="user.role" (change)="onRoleChange(user.id, $event)">
+                    <option value="CLIENT">Client</option>
+                    <option value="LIVREUR">Livreur</option>
+                    <option value="GERANT">Gérant</option>
+                  </select>
+                </div>
+              </td>
+
+              <!-- Contacts -->
+              <td>
+                <div class="contacts-wrapper-info">
+                  <span class="phone-number"><i class="bi bi-telephone-fill text-muted small me-1"></i> {{ user.phone }}</span>
+                  <span class="email-text text-muted d-block small">{{ user.email }}</span>
+                </div>
+              </td>
+
+              <!-- Statut Actif/Bloqué -->
+              <td>
+                <span class="status-badge-admin" [class.blocked-badge]="user.is_blocked">
+                  <span class="status-dot"></span>
+                  {{ user.is_blocked ? 'Compte Bloqué' : 'Compte Actif' }}
+                </span>
+              </td>
+
+              <!-- Actions administrateur à chaud -->
+              <td class="text-end">
+                <div class="action-buttons-group">
+                  
+                  <!-- Switch Bloquer / Débloquer -->
+                  <button class="btn-action block-btn" 
+                          [class.deblock]="user.is_blocked"
+                          (click)="toggleBlockStatus(user)"
+                          [title]="user.is_blocked ? 'Débloquer et autoriser l\'accès' : 'Bloquer temporairement l\'accès'">
+                    <i class="bi" [class.bi-unlock-fill]="user.is_blocked" [class.bi-slash-circle-fill]="!user.is_blocked"></i>
+                  </button>
+
+                  <!-- Envoyer un message direct -->
+                  <button class="btn-action alert-btn" (click)="openMessageModal(user)" title="Transmettre une alerte de sécurité">
+                    <i class="bi bi-chat-left-dots-fill"></i>
+                  </button>
+
+                </div>
+              </td>
+
+            </tr>
+
+            <!-- Cas vide -->
+            <tr *ngIf="filteredUsers.length === 0">
+              <td colspan="5" class="text-center py-5 empty-table-message">
+                <i class="bi bi-people-fill text-muted mb-2"></i>
+                <p>Aucun utilisateur trouvé correspondant à vos critères.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODALE D'ALERTE ADMINISTRATIVE ET MESSAGE SYSTEME -->
+
+<!-- Broadcast Modal -->
+<div class="bama-modal-overlay" *ngIf="showBroadcastModal">
+  <div class="msg-modal-card animated-zoom-in">
+    <div class="modal-header-alert">
+      <h3><i class="bi bi-megaphone-fill text-gold me-2"></i> Annonce Globale</h3>
+      <button class="btn-close-modal" (click)="showBroadcastModal = false">✕</button>
+    </div>
+    
+    <div class="modal-body-content mt-4">
+      <div class="input-wrap">
+        <label class="mb-1 d-block text-muted small fw-bold">Sujet de l'annonce</label>
+        <input class="input-field" placeholder="Ex: Nouvelle politique de livraison" [(ngModel)]="broadcastSubject">
+      </div>
+      
+      <div class="input-wrap mt-3">
+        <label class="mb-1 d-block text-muted small fw-bold">Message principal</label>
+        <textarea class="input-field" rows="5" placeholder="Écrivez votre annonce ici..." [(ngModel)]="broadcastMessage"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer-alert">
+      <button class="btn-close-modal" (click)="showBroadcastModal = false">Annuler</button>
+      <button 
+        class="btn-send-alert" 
+        (click)="sendSystemBroadcast()" 
+        [disabled]="!broadcastSubject.trim() || !broadcastMessage.trim() || isSendingBroadcast">
+        <i class="bi bi-megaphone-fill"></i> {{ isSendingBroadcast ? 'Envoi...' : 'Envoyer l\'annonce' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Message unique utilisateur Modal -->
+<div class="bama-modal-overlay" *ngIf="showMsgModal">
+  <div class="msg-modal-card animated-zoom-in">
+    <div class="modal-header-alert">
+      <h3><i class="bi bi-chat-left-dots-fill text-gold me-2"></i> Alerte Administrative</h3>
+      <button class="btn-close-modal" (click)="closeMessageModal()">✕</button>
+    </div>
+
+    <div class="modal-body-content mt-4" *ngIf="activeUserForMsg">
+      <p class="recipient-txt">Alerte destinée à : <strong>{{ activeUserForMsg.first_name }} {{ activeUserForMsg.last_name }}</strong></p>
+      
+      <div class="input-wrap mt-3">
+        <label class="mb-1 d-block text-muted small fw-bold">Sujet de la notification</label>
+        <select [(ngModel)]="messageSubject" class="bama-select">
+          <option value="Avis de sécurité">Avis de sécurité de la console</option>
+          <option value="Avertissement comportement">Rappel aux règles de conduite BamaFood</option>
+          <option value="Information compte">Mise à jour d'activité administrative</option>
+        </select>
+      </div>
+
+      <div class="input-wrap mt-3">
+        <label class="mb-1 d-block text-muted small fw-bold">Message</label>
+        <textarea rows="4" [(ngModel)]="messageBody" placeholder="Saisissez l'alerte ou la notification système à lui transmettre..."></textarea>
+      </div>
+    </div>
+
+    <!-- Actions modale -->
+    <div class="modal-actions-group mt-4">
+      <button class="btn-modal-cancel" (click)="closeMessageModal()">Annuler</button>
+      <button class="btn-modal-save" (click)="sendSystemMessage()">Transmettre l'alerte</button>
+    </div>
+  </div>
+</div>

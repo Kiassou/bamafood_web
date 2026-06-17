@@ -1,0 +1,542 @@
+:host {
+  --dark: #0a0a0a;
+  --card: #111111;
+  --gold: #ffb800;
+  --orange: #ff8c00;
+  --ticket-bg: #0f0f0f;
+  display: block;
+  background: var(--dark);
+  color: white;
+  min-height: 100vh;
+}
+
+.text-gold { color: var(--gold); }
+.fw-black { font-weight: 900; }
+.extreme-small { font-size: 11px; }
+.tracking-wider { letter-spacing: 1.5px; }
+
+.food-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (min-width: 768px) {
+  .food-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.food-search-box {
+  position: relative;
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.food-search-box i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  transition: 0.3s;
+}
+
+.food-search-box input {
+  width: 100%;
+  padding: 12px 12px 12px 45px;
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  color: white;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.food-search-box input:focus {
+  border-color: var(--gold);
+  outline: none;
+  box-shadow: 0 0 10px rgba(255, 184, 0, 0.1);
+}
+
+.food-search-box input:focus + i {
+  color: var(--gold);
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.025));
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 22px;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+}
+
+.skeleton-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.12) 37%,
+    rgba(255,255,255,0.05) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.3s infinite linear;
+}
+
+.skeleton-content { padding: 1rem; }
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.12) 37%,
+    rgba(255,255,255,0.05) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.3s infinite linear;
+}
+
+.skeleton-line.short { width: 60%; }
+.skeleton-line.medium { width: 85%; }
+.skeleton-line.price { width: 45%; height: 14px; }
+
+.skeleton-btn {
+  width: 100%;
+  height: 42px;
+  border-radius: 14px;
+  margin-top: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,184,0,0.08) 25%,
+    rgba(255,184,0,0.18) 37%,
+    rgba(255,184,0,0.08) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.3s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+@media (max-width: 1200px) {
+  .skeleton-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 992px) {
+  .skeleton-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 576px) {
+  .skeleton-grid { grid-template-columns: 1fr; }
+}
+
+.food-categories {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  scrollbar-width: none;
+}
+
+.food-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.category-btn {
+  background: var(--card);
+  color: #888;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.category-btn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.category-btn.active {
+  background: var(--gold);
+  color: black;
+  border-color: var(--gold);
+  box-shadow: 0 4px 12px rgba(255, 184, 0, 0.2);
+}
+
+.food-order-card {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: 0.3s ease;
+}
+
+.food-order-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 184, 0, 0.2);
+}
+
+.food-img {
+  height: 140px;
+  object-fit: cover;
+}
+
+.category-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  color: var(--gold);
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+.btn-add-ticket {
+  background: rgba(255, 184, 0, 0.1);
+  color: var(--gold);
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  border-radius: 12px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-add-ticket:hover {
+  background: var(--gold);
+  color: black;
+}
+
+.ticket-container {
+  background: var(--ticket-bg);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  min-height: 550px;
+  position: sticky;
+  top: 24px;
+}
+
+.ticket-header {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.ticket-line {
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.ticket-body {
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.ticket-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  animation: slideIn 0.25s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.qty-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.qty-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.btn-submit-order {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  border-radius: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-submit-order:disabled {
+  background: #222 !important;
+  color: #555 !important;
+  cursor: not-allowed;
+}
+
+.btn-view-ticket-mobile {
+  display: none;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.btn-view-ticket-mobile.visible {
+  display: inline-flex;
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.food-image-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.fav-overlay-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  transition: 0.2s ease;
+}
+
+.fav-overlay-btn:hover {
+  transform: scale(1.05);
+  color: #ff4d6d;
+  border-color: rgba(255, 77, 109, 0.35);
+}
+
+.fav-overlay-btn.active {
+  background: rgba(255, 77, 109, 0.15);
+  color: #ff4d6d;
+  border-color: rgba(255, 77, 109, 0.35);
+}
+
+.custom-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  animation: fadeIn 0.2s ease-out;
+  padding: 16px;
+}
+
+.modal-content {
+  background: #111;
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  border-radius: 28px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.success-icon-wrap {
+  width: 60px;
+  height: 60px;
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.progress-bar-timeout {
+  height: 3px;
+  background: var(--gold);
+  width: 100%;
+  animation: shrinkWidth 3s linear forwards;
+  border-radius: 2px;
+}
+
+.ticket-action-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mini-success {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2ecc71;
+  background: rgba(46, 204, 113, 0.08);
+  border: 1px solid rgba(46, 204, 113, 0.18);
+  padding: 6px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  animation: miniFadeIn 0.2s ease-out;
+}
+
+@keyframes miniFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shrinkWidth {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.btn-view-ticket-mobile {
+  display: none;
+}
+
+.mobile-ticket-modal {
+  width: min(100%, 560px);
+  max-height: 90vh;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+@media (max-width: 1199.98px) {
+  .ticket-container {
+    display: none;
+  }
+
+  .btn-view-ticket-mobile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 92px;
+    right: 16px;
+    z-index: 3000;
+    width: auto;
+    min-width: 132px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: #111;
+    font-weight: 800;
+    box-shadow: 0 10px 22px rgba(255, 140, 0, 0.18);
+  }
+
+  .mobile-ticket-modal {
+    display: block;
+  }
+
+  .food-toolbar {
+    gap: 12px;
+  }
+
+  .food-search-box {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .btn-view-ticket-mobile {
+    top: auto;
+    bottom: 16px;
+    right: 16px;
+    width: auto;
+    min-width: unset;
+    padding: 11px 14px;
+  }
+
+  .ticket-body {
+    max-height: 48vh;
+  }
+}
+
+@media (min-width: 1200px) {
+  .btn-view-ticket-mobile,
+  .mobile-ticket-modal {
+    display: none;
+  }
+}
+
+.food-image-wrap {
+  position: relative;
+}
+
+.food-img {
+  display: block;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.fav-overlay-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.category-tag {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 9;
+}
+
+.food-image-wrap {
+  position: relative;
+}
+
+.fav-overlay-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  pointer-events: auto;
+}

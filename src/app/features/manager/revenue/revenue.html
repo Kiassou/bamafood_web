@@ -1,0 +1,144 @@
+<form [formGroup]="form" class="revenue-page">
+  <div class="topbar">
+    <div class="back-btn">
+      <button type="button" class="icon-btn" (click)="back()">
+        <span><i class="bi bi-arrow-left"></i></span>
+      </button>
+    </div>
+
+    <div class="topbar-left">
+      <div>
+        <h2>Revenus BamaFood</h2>
+        <p>Suivi du chiffre d'affaires et des ventes livrées</p>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <button type="button" class="icon-btn" (click)="downloadPdf()">
+        <span><i class="bi bi-download"></i></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <i>₣</i>
+      <h3>{{ summary.dayRevenue | number:'1.0-0' }}</h3>
+      <p>CA du jour</p>
+    </div>
+
+    <div class="stat-card">
+      <i>₣</i>
+      <h3>{{ summary.weekRevenue | number:'1.0-0' }}</h3>
+      <p>CA de la semaine</p>
+    </div>
+
+    <div class="stat-card">
+      <i>₣</i>
+      <h3>{{ summary.monthRevenue | number:'1.0-0' }}</h3>
+      <p>CA du mois</p>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <div class="big-card">
+      <div class="card-title">
+        <i>📈</i>
+        <h4>CA Jour</h4>
+      </div>
+      <div class="chart-box">
+        <canvas #dayChartCanvas></canvas>
+      </div>
+      <p>Évolution du revenu journalier avec tendance rapide.</p>
+    </div>
+
+    <div class="big-card">
+      <div class="card-title">
+        <i>📊</i>
+        <h4>CA Semaine</h4>
+      </div>
+      <div class="chart-box">
+        <canvas #weekChartCanvas></canvas>
+      </div>
+      <p>Vue de la progression sur la semaine en cours.</p>
+    </div>
+
+    <div class="big-card">
+      <div class="card-title">
+        <i>🟡</i>
+        <h4>CA Mois</h4>
+      </div>
+      <div class="chart-box">
+        <canvas #monthChartCanvas></canvas>
+      </div>
+      <p>Résumé mensuel du chiffre d'affaires.</p>
+    </div>
+  </div>
+
+  <div class="filters-card" style="margin-top:25px;">
+    <div class="filters-grid">
+      <div class="field">
+        <label>Recherche</label>
+        <input type="text" formControlName="search" placeholder="Client, commande, plat..." />
+      </div>
+
+      <div class="field">
+        <label>Intervalle</label>
+        <select formControlName="period">
+          <option value="all">Tous</option>
+          <option value="today">Jour</option>
+          <option value="week">Semaine</option>
+          <option value="month">Mois</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Du</label>
+        <input type="date" formControlName="startDate" />
+      </div>
+
+      <div class="field">
+        <label>Au</label>
+        <input type="date" formControlName="endDate" />
+      </div>
+    </div>
+  </div>
+
+  <div class="list-card" style="margin-top:25px;">
+    <div class="list-header">
+      <div>
+        <h3>Liste des ventes</h3>
+        <p>Total de la liste: {{ totalList | number:'1.0-0' }}</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Client</th>
+            <th>Plats</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of list">
+            <td>#{{ item.id }}</td>
+            <td>{{ item.clientName }}</td>
+            <td class="dish-cell">{{ item.dishNames }}</td>
+            <td>{{ item.totalPrice | number:'1.0-0' }}</td>
+            <td><span class="status-pill">{{ item.status }}</span></td>
+            <td>{{ item.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+
+          <tr *ngIf="list.length === 0">
+            <td colspan="6" class="empty-state">Aucune vente trouvée.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>

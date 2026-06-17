@@ -1,0 +1,310 @@
+<!-- Overlay arrière-plan pour Mobile -->
+<div class="sidebar-overlay"
+     [class.active]="isSidebarOpen"
+     (click)="closeSidebar()">
+</div>
+
+<!-- SIDEBAR GÉRANT (Strictement identique au client) -->
+<aside class="sidebar"
+       [class.closed]="isSidebarClosed"
+       [class.active]="isSidebarOpen">
+
+    <div>
+        <div class="sidebar-top">
+            <h1 class="logo">
+                <span class="first-letter">B</span>
+                <span class="logo-text">
+                    ama<span>Food</span>
+                </span>
+            </h1>
+            <button class="close-sidebar d-lg-none" (click)="closeSidebar()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <ul class="menu">
+            <li class="active">
+                <a [routerLink]="['/manager/dashboard']">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/manager/dishes']">
+                    <i class="bi bi-egg-fried"></i>
+                    <span>Gestion des plats</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/manager/orders']">
+                    <i class="bi bi-basket2-fill"></i>
+                    <span>Commandes</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/manager/accounts-manager']">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Comptes</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/profile']">
+                    <i class="bi bi-person-fill"></i>
+                    <span>Profil</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <button class="logout-btn" (click)="openLogoutModal()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Déconnexion</span>
+    </button>
+</aside>
+
+<!-- CONTENU PRINCIPAL DU GÉRANT -->
+<main class="main-content">
+
+    <!-- TOPBAR (Même structure avec stats gérant) -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" (click)="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            <div>
+                <h2>Bienvenue, {{ username }}</h2>
+                <p>Espace d'Administration BamaFood 🛠️</p>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <button class="icon-btn" [routerLink]="['/notification']">
+              <i class="bi bi-bell-fill"></i>
+              <span class="badge-notif" *ngIf="((unreadCount$ | async) || 0) > 0">
+                {{ unreadCount$ | async }}
+              </span>
+            </button>
+            <!-- Remplacement de l'icône communauté par l'icône paramètre rapide -->
+            <button class="icon-btn" [routerLink]="['/manager/profile']">
+                <i class="bi bi-gear-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SKELETON LOADER CHIC (Pendant le chargement) -->
+    <div *ngIf="isLoading" class="manager-skeleton-container">
+        <div class="stats-grid">
+            <div class="skeleton-box (stat-card)" style="height: 145px; border-radius: 24px;"></div>
+            <div class="skeleton-box (stat-card)" style="height: 145px; border-radius: 24px;"></div>
+            <div class="skeleton-box (stat-card)" style="height: 145px; border-radius: 24px;"></div>
+        </div>
+        <div class="cards-grid mt-4">
+            <div class="skeleton-box (big-card)" style="height: 250px; border-radius: 24px;"></div>
+            <div class="skeleton-box (big-card)" style="height: 250px; border-radius: 24px;"></div>
+        </div>
+    </div>
+
+    <!-- VRAI CONTENU (Une fois chargé) -->
+    <div *ngIf="!isLoading" class="animated-fade-in">
+        
+        <!-- CARTES STATS DU GÉRANT -->
+        <div class="stats-grid">
+            <div class="stat-card clickable" (click)="openDetailModal('revenue')">
+                <i class="bi bi-cash-stack"></i>
+                <h3>{{ totalRevenue | number }} F</h3>
+                <p>Recettes du jour</p>
+            </div>
+
+            <div class="stat-card clickable" (click)="openDetailModal('pending')">
+                <i class="bi bi-clock-history"></i>
+                <h3>{{ pendingCount }}</h3>
+                <p>En préparation</p>
+            </div>
+
+            <div class="stat-card clickable" (click)="openDetailModal('dishes')">
+                <i class="bi bi-egg-fried"></i>
+                <h3>{{ totalDishes }}</h3>
+                <p>Plats actifs</p>
+            </div>
+        </div>
+        
+        <div class="modal-overlay" *ngIf="showDetailModal" (click)="closeDetailModal()">
+            <div class="modal-card" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>{{ modalTitle }}</h3>
+                    <button class="close-btn" (click)="closeDetailModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-content-placeholder">
+                        <p>Chargement des détails pour : <strong>{{ activeDetailType }}</strong>...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRIDS DES MODULES (Commandes & Actions Rapides) -->
+        <div class="cards-grid">
+            
+            <!-- BLOC : COMMANDES PRIORITAIRES (Max 5, triées) -->
+            <div class="big-card">
+                <div>
+                    <div class="card-title">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        <h4>Commandes prioritaires</h4>
+                    </div>
+                    
+                    <div class="manager-mini-list">
+                        <div class="manager-item-row" *ngFor="let order of priorityOrders">
+                            <div class="row-meta">
+                                <span class="row-id">#{{ order.id }}</span>
+                                <span class="row-time">⏳ {{ order.createdAt | date:'HH:mm' }}</span>
+                            </div>
+                            <p class="row-desc">{{ order.clientName }} • {{ order.dishNames }}</p>
+                        </div>
+                        <div *ngIf="priorityOrders.length === 0" class="text-muted small py-2">
+                            Aucune commande en attente pour le moment.
+                        </div>
+                    </div>
+                </div>
+                <a [routerLink]="['/manager/orders']">
+                    Voir plus
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- BLOC : ACTIONS RAPIDES -->
+            <div class="big-card">
+                <div>
+                    <div class="card-title">
+                        <i class="bi bi-sliders"></i>
+                        <h4>Actions rapides</h4>
+                    </div>
+                    <p>Mettez à jour votre carte ou modérez les comptes utilisateurs de l'application en un clic.</p>
+                    
+                    <div class="manager-shortcut-buttons">
+                        <button class="shortcut-btn" [routerLink]="['/manager/add-dish']">
+                            <i class="bi bi-plus-square"></i> Ajouter un plat
+                        </button>
+                        <button class="shortcut-btn" [routerLink]="['/manager/accounts-manager']">
+                            <i class="bi bi-shield-lock"></i> Gérer les comptes
+                        </button>
+                        
+                        <button class="shortcut-btn" [routerLink]="['/manager/delivery']">
+                            <i class="bi bi-truck"></i> Gérer les livraisons
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+
+        <div class="cards-grid mt-4">
+    <div class="big-card">
+        <div class="card-title">
+            <i class="bi bi-clock-history"></i>
+            <h4>Activités récentes</h4>
+        </div>
+
+        <div class="manager-mini-list">
+            <div class="manager-item-row" *ngFor="let activity of recentActivities">
+                <div class="row-meta">
+                    <span class="row-id">{{ activity.type }}</span>
+                    <span class="row-time">{{ activity.createdAt | date:'HH:mm' }}</span>
+                </div>
+                <p class="row-desc">{{ activity.description }}</p>
+            </div>
+            
+            <div *ngIf="recentActivities.length === 0" class="text-muted small py-2">
+                Aucune activité récente.
+            </div>
+        </div>
+
+        <a [routerLink]="['/manager/activities']" class="see-more">
+            Voir plus <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="big-card">
+        <div class="card-title">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            <h4>Chart des ventes</h4>
+        </div>
+        <div class="chart-placeholder">
+            <canvas #miniRevenueChart width="100%" height="250px"></canvas>
+            <div class="mt-3 text-center small text-muted">
+                <div class="d-inline-block me-4">
+                    <span class="badge" style="background-color: #ffb800;"></span> Jour
+                </div>
+                <div class="d-inline-block me-4">
+                    <span class="badge" style="background-color: #ff8c00;"></span> Semaine
+                </div>
+                <div class="d-inline-block">
+                    <span class="badge" style="background-color: #ff5f1f;"></span> Mois
+                </div>
+            </div>
+        </div>
+
+        <a [routerLink]="['/manager/analytics']" class="see-more">
+            Voir plus <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
+    </div>
+
+    <!-- MODAL DE CONFIRMATION DE DÉCONNEXION -->
+    <div class="logout-modal-overlay" *ngIf="showLogoutModal" (click)="closeLogoutModal()">
+        <div class="logout-modal-card" (click)="$event.stopPropagation()">
+            <div class="logout-modal-icon">
+                <i class="bi bi-power"></i>
+            </div>
+
+            <h3>Confirmer la déconnexion</h3>
+            <p>Voulez-vous vraiment quitter votre session BamaFood ?</p>
+
+            <div class="logout-modal-actions">
+                <button class="btn-cancel-logout" (click)="closeLogoutModal()">Annuler</button>
+                <button class="btn-confirm-logout" (click)="confirmLogout()">
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GÉNÉRAL DÉTAILS -->
+<div class="modal-overlay" *ngIf="showDetailModal" (click)="closeDetailModal()">
+    <div class="modal-card" [ngClass]="activeDetailType + '-modal'" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+            <h3>{{ modalTitle }}</h3>
+            <button class="close-btn" (click)="closeDetailModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="modal-content-placeholder">
+                <div *ngFor="let item of detailItems">
+                    <span *ngIf="activeDetailType === 'revenue' || activeDetailType === 'pending'">
+                        <div><strong>Commande #{{ item.id }}</strong></div>
+                        <div>Client : {{ item.clientName }}</div>
+                        <div>Montant : {{ item.totalPrice }} F</div>
+                        <div>Statut : {{ item.status }}</div>
+                        <div>Date : {{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                      </span>
+                    
+                      <span *ngIf="activeDetailType === 'dishes'">
+                        <div><strong>{{ item.name }}</strong></div>
+                        <div>Prix : {{ item.price }} F</div>
+                        <div>Date : {{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                      </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a class="see-more" [routerLink]="detailLink" (click)="closeDetailModal()">
+                Voir plus <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>        
+    </div>
+</div>
+</main>

@@ -1,0 +1,76 @@
+<div class="container py-5">
+  <div class="mb-4">
+    <a routerLink="/client/dashboard" class="text-decoration-none small fw-bold text-gold">
+      <i class="bi bi-arrow-left me-2"></i> Retour au tableau de bord
+    </a>
+  </div>
+
+  <h1 class="h2 fw-bold mb-5 text-white">
+    Mes Plats <span class="text-gold">Favoris</span> ❤️
+  </h1>
+
+  <div *ngIf="isLoading" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div class="col" *ngFor="let _ of skeletonItems">
+      <div class="fav-card h-100 d-flex flex-column justify-content-between skeleton">
+        <div class="position-relative container-fav-img skeleton-box"></div>
+
+        <div class="p-3 flex-grow-1 d-flex flex-column justify-content-between">
+          <div class="mb-3">
+            <span class="skeleton-text d-block mb-2"></span>
+            <div class="skeleton-text title mb-2"></div>
+            <div class="skeleton-text price"></div>
+          </div>
+          <div class="skeleton-btn"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && favorites.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div class="col" *ngFor="let favorite of favorites">
+      <div class="fav-card h-100 d-flex flex-column justify-content-between">
+        <div class="position-relative container-fav-img">
+          <img [src]="favorite.imageUrl" class="img-fluid w-100 object-fit-cover fav-img" [alt]="favorite.name">
+
+          <button class="btn-remove-fav" (click)="removeFavorite(favorite.favoriteId)" title="Retirer des favoris">
+            <i class="bi bi-heart-fill"></i>
+          </button>
+        </div>
+
+        <div class="p-3 flex-grow-1 d-flex flex-column justify-content-between">
+          <div class="mb-3">
+            <span class="text-muted extreme-small text-uppercase tracking-wider fw-semibold">
+              {{ favorite.category }}
+            </span>
+            <h3 class="h6 fw-bold text-white mt-1 mb-2">{{ favorite.name }}</h3>
+            <p class="text-gold fw-bold mb-0 standard-price">{{ favorite.price }} FCFA</p>
+          </div>
+
+          <button class="btn btn-add-cart-fav w-100 btn-sm py-2" (click)="addToCart(favorite)">
+            <i class="bi bi-bag-plus me-2"></i> Ajouter au panier
+          </button>
+          <div class="mini-success" *ngIf="lastAddedFoodId === favorite.dishId.toString()">
+            <i class="bi bi-check-circle-fill me-1"></i> Plat ajouté
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && favorites.length === 0" class="text-center py-5 empty-fav-zone">
+    <div class="empty-fav-icon-wrap mb-4">
+      <i class="bi bi-heartbreak"></i>
+    </div>
+    <h2 class="h4 text-white fw-bold mb-2">Aucun favori pour le moment</h2>
+    <p class="text-muted small mb-4 mx-auto max-width-p">
+      Vous n'avez pas encore de coup de cœur ? Parcourez notre carte et cliquez sur le cœur pour ajouter vos plats préférés ici !
+    </p>
+    <a routerLink="/client/commander" class="btn btn-explore px-4 py-2.5 fw-bold text-black">
+      Découvrir le menu 🍔
+    </a>
+  </div>
+</div>

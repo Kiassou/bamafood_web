@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    background-color: #0D0D0C;
+    /* Sécurité si l'image met du temps à charger */
+}
+
+/* Correction du nom de la classe pour matcher le HTML */
+.splash-container {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+
+    /* Ton image est configurée pour couvrir l'écran proprement sans déformation */
+    background-image: url("/assets/images/bamafood_splash.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Overlay sombre premium */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Contenu */
+.content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 90%;
+    /* Évite que le contenu colle aux bords sur petit mobile */
+    max-width: 600px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 1.5s ease-out;
+}
+
+/* Style de l'image/logo si tu décides de l'ajuster */
+.logo {
+    max-width: 180px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.content h1 {
+    color: #FFB800;
+    /* Ton jaune/orange punchy du design */
+    font-size: 4rem;
+    /* Taille adaptative */
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 4px 15px rgba(255, 184, 0, 0.3);
+}
+
+.content .tagline {
+    color: #FFFFFF;
+    margin-top: 10px;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* Loader ultra responsive */
+.loader {
+    width: 100%;
+    max-width: 280px;
+    /* Plus petit sur mobile, bloqué à 280px max sur desktop */
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    overflow: hidden;
+
+    /* 1. PAR DÉFAUT (Mobile) : Une marge plus basse pour que ça reste visible et bien positionné */
+    margin-top: 380px;
+}
+
+/* 2. CONDITION TABLETTE (Écrans de plus de 768px wide) */
+@media (min-width: 768px) {
+    .loader {
+        margin-top: 420px;
+        /* On descend un peu plus sur tablette */
+    }
+}
+
+/* 3. CONDITION DESKTOP (Écrans de plus de 1024px wide) */
+@media (min-width: 1024px) {
+    .loader {
+        margin-top: 450px;
+        /* Ta valeur parfaite pour la version ordinateur */
+    }
+}
+
+.loader-bar {
+    width: 0%;
+    height: 100%;
+    border-radius: 30px;
+    background: linear-gradient(to right, #FA9E14, #FFB800, #FFE599);
+    box-shadow: 0 0 12px #FFB800;
+    animation: loading 5.5s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+    /* Transition plus fluide */
+}
+
+.loading-text {
+    color: #A0A0A0;
+    /* Gris clair discret */
+    font-size: 0.9rem;
+    margin-top: 15px;
+    letter-spacing: 1px;
+}
+/* --- MEDIA QUERIES (Pour gérer le Responsive Tablette & Desktop) --- */
+
+/* Tablettes (768px et plus) */
+@media (min-width: 768px) {
+    .content h1 {
+        font-size: 5.5rem;
+    }
+
+    .content .tagline {
+        font-size: 1.5rem;
+    }
+
+    .loader {
+        max-width: 350px;
+        height: 8px;
+    }
+
+    .loading-text {
+        font-size: 1rem;
+    }
+}
+
+/* Desktops (1024px et plus) */
+@media (min-width: 1024px) {
+    .content h1 {
+        font-size: 6rem;
+    }
+
+    .logo {
+        max-width: 220px;
+    }
+}
+
+/* --- Animations --- */
+@keyframes loading {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

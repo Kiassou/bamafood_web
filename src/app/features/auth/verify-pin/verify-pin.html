@@ -1,0 +1,71 @@
+<div class="bg-animation"></div>
+
+<div class="particles">
+  <span *ngFor="let p of [1,2,3,4,5,6,7,8,9,10]"></span>
+</div>
+
+<div class="pin-lock-container">
+  <div class="pin-card" [class.shake-animation]="isWrongPin">
+    
+    <div class="brand-header">
+      <h1 class="brand-title">BAMA<span>FOOD</span></h1>
+      <div class="badge-admin">ESPACE PRIVÉ DE CONTRÔLE</div>
+    </div>
+
+    <div class="pin-instructions">
+      <div class="lock-icon-wrap">
+        <i class="bi bi-shield-lock-fill"></i>
+      </div>
+      <h4>Saisie du Code PIN</h4>
+    </div>
+
+    <div class="dots-container">
+      <div class="dot" *ngFor="let dot of [0, 1, 2, 3, 4, 5]" [class.filled]="enteredPin.length > dot"></div>
+    </div>
+
+    <div class="numeric-keypad">
+      <button class="key-btn" (click)="pressKey('1')">1</button>
+      <button class="key-btn" (click)="pressKey('2')">2</button>
+      <button class="key-btn" (click)="pressKey('3')">3</button>
+
+      <button class="key-btn" (click)="pressKey('4')">4</button>
+      <button class="key-btn" (click)="pressKey('5')">5</button>
+      <button class="key-btn" (click)="pressKey('6')">6</button>
+
+      <button class="key-btn" (click)="pressKey('7')">7</button>
+      <button class="key-btn" (click)="pressKey('8')">8</button>
+      <button class="key-btn" (click)="pressKey('9')">9</button>
+
+      <button class="key-btn action-key text-muted" (click)="onCancel()" title="Retour au tableau de bord">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <button class="key-btn" (click)="pressKey('0')">0</button>
+      <button class="key-btn action-key text-gold" (click)="deleteLastDigit()" title="Effacer le dernier chiffre">
+        <i class="bi bi-backspace-fill"></i>
+      </button>
+    </div>
+
+    <div class="attempts-indicator" *ngIf="attemptsLeft < 3">
+      <span>Attention : {{ attemptsLeft }} tentative(s) restante(s) avant verrouillage.</span>
+    </div>
+
+    <div class="error-msg-box" *ngIf="errorMessage">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="lockout-overlay" *ngIf="isLockedOut">
+  <div class="lockout-card">
+    <div class="lockout-icon">
+      <i class="bi bi-exclamation-octagon-fill"></i>
+    </div>
+    <h3>Console Verrouillée</h3>
+    <p class="lockout-desc">Trop d'erreurs de saisie consécutives ont été détectées. Par mesure de sécurité, l'accès est suspendu temporairement.</p>
+    <div class="timer-box">
+      <span>{{ lockoutCountdown }}s</span>
+    </div>
+    <p class="lockout-footer">Veuillez patienter avant de faire un nouvel essai.</p>
+  </div>
+</div>

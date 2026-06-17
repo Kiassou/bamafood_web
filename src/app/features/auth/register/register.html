@@ -1,0 +1,162 @@
+<div class="bg-animation"></div>
+
+<div class="particles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="container min-vh-100 d-flex justify-content-center align-items-center py-2">
+    <div class="register-card p-4 p-md-4">
+
+        <h1 class="brand-title text-center">
+            Bama<span>Food</span>
+        </h1>
+        <p class="subtitle text-center">
+            Créez votre compte premium
+        </p>
+
+        <div *ngIf="errorMessage" class="alert alert-warning mb-2">
+            {{ errorMessage }}
+        </div>
+
+        <form (ngSubmit)="onRegister()" autocomplete="off">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-light-50">Nom</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Votre nom"
+                            [(ngModel)]="user.lastName"
+                            name="lastName"
+                            autocomplete="off"
+                            required>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-light-50">Prénom</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Votre prénom"
+                            [(ngModel)]="user.firstName"
+                            name="firstName"
+                            required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-light-50">Nom d'utilisateur</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-at"></i>
+                        </span>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Identifiant"
+                            [(ngModel)]="user.username"
+                            name="username"
+                            required>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-light-50">Téléphone</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-telephone-fill"></i>
+                        </span>
+                        <input
+                            type="tel"
+                            class="form-control"
+                            placeholder="+223 XX XX XX XX"
+                            [(ngModel)]="user.phone"
+                            name="phone"
+                            required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light-50">Email</label>
+                <div class="input-group custom-input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-envelope-fill"></i>
+                    </span>
+                    <input
+                        type="email"
+                        class="form-control"
+                        placeholder="example@gmail.com"
+                        [(ngModel)]="user.email"
+                        name="email"
+                        required>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <label class="form-label text-light-50">Mot de passe</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock-fill"></i>
+                        </span>
+                        <input
+                        [type]="showPassword ? 'text' : 'password'"
+                        class="form-control"
+                        placeholder="••••••••"
+                        [(ngModel)]="user.password"
+                        name="password"
+                        autocomplete="new-password"
+                        required>
+                            <span class="input-group-text toggle-password" (click)="togglePassword()">
+                            <i class="bi" [ngClass]="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label text-light-50">Confirmer</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </span>
+                        <input
+                            [type]="showPassword ? 'text' : 'password'"
+                            class="form-control"
+                            placeholder="••••••••"
+                            [(ngModel)]="user.confirmPassword"
+                            name="confirmPassword"
+                            required>
+                        <span class="input-group-text toggle-password" (click)="togglePassword()">
+                            <i class="bi" [ngClass]="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-register w-100 py-2" [disabled]="isLoading">
+    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    {{ isLoading ? 'Création du compte...' : 'S\'inscrire' }}
+</button>
+
+            <div class="bottom-text text-center small mt-3">
+                Déjà un compte ? 
+                <a routerLink="/login" class="text-decoration-none ms-1">Se connecter</a>
+            </div>
+
+        </form>
+    </div>
+</div>

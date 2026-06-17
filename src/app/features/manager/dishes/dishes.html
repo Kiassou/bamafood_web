@@ -1,0 +1,244 @@
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="btn-add-dish-top" (click)="backToDashboard()">
+                <i class="bi bi-arrow-left"></i> <span>Retour</span>
+            </button>
+            <h2>Gestion des plats</h2>
+            <p>Catalogue & performances</p>
+        </div>
+        <div class="topbar-right">
+        <button class="btn-add-dish-top"[routerLink]="['/manager/add-dish']">
+            <i class="bi bi-plus-lg"></i> <span>Nouveau Plat</span>
+        </button>
+    </div>
+</div>
+
+<!-- SKELETON LOADER EN CAS DE CHARGEMENT -->
+<div *ngIf="isLoading" class="manager-skeleton-container">
+    <div class="stats-grid">
+        <div class="skeleton-box" style="height: 145px; border-radius: 24px;"></div>
+        <div class="skeleton-box" style="height: 145px; border-radius: 24px;"></div>
+        <div class="skeleton-box" style="height: 145px; border-radius: 24px;"></div>
+    </div>
+    <div class="skeleton-box mt-4" style="height: 300px; border-radius: 24px;"></div>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
+<div *ngIf="!isLoading" class="animated-fade-in">
+    
+    <!-- COUNTERS DE SYNTHÈSE -->
+    <div class="stats-grid">
+        <div class="stat-card cursor-pointer" (click)="filterByStatus('all')" [class.active-filter]="currentFilter === 'all'">
+            <i class="bi bi-egg-fried"></i>
+            <h3>{{ totalDishesCount }}</h3>
+            <p>Tous les plats référencés</p>
+        </div>
+        <div class="stat-card cursor-pointer" (click)="filterByStatus('active')" [class.active-filter]="currentFilter === 'active'">
+            <i class="bi bi-eye-fill text-success"></i>
+            <h3>{{ activeDishesCount }}</h3>
+            <p>Plats Actifs (Visibles client)</p>
+        </div>
+        <div class="stat-card cursor-pointer" (click)="filterByStatus('inactive')" [class.active-filter]="currentFilter === 'inactive'">
+            <i class="bi bi-eye-slash-fill text-muted"></i>
+            <h3>{{ inactiveDishesCount }}</h3>
+            <p>Plats Désactivés (Masqués)</p>
+        </div>
+    </div>
+
+
+    <!-- ZONE COMPACTE : LE TOP 5 DES PLATS LES PLUS COMMANDÉS -->
+    <section class="top-dishes-section mb-5">
+        <div class="section-header">
+            <h3><i class="bi bi-trophy-fill text-gold"></i> Top 5 des plats les plus commandés</h3>
+            <span class="badge-premium">Performances BamaFood</span>
+        </div>
+        <div class="top-dishes-grid">
+            <div class="top-dish-mini-card" *ngFor="let topDish of top5Dishes; let i = index">
+                <div class="rank-badge">#{{ i + 1 }}</div>
+                <img [src]="topDish.imageUrl || 'assets/images/default-food.jpg'" [alt]="topDish.name">
+                <div class="top-dish-info">
+                    <h5>{{ topDish.name }}</h5>
+                    <p>{{ topDish.orderCount }} commandes</p>
+                    <span class="top-dish-revenue">+{{ topDish.orderCount * topDish.price | number }} F</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GRILLE PRINCIPALE DE TOUS LES CARDS DE PLATS -->
+    <section class="dishes-catalog-section">
+        <div class="section-header">
+            <h3><i class="bi bi-grid-3x3-gap-fill text-gold"></i> Catalogue de votre carte</h3>
+            <div class="catalog-meta">{{ filteredDishes.length }} plat(s) trouvé(s)</div>
+        </div>
+
+        <!-- BARRE DE SÉLECTION CHIC DES CATÉGORIES (Filtre horizontal rapide) -->
+    <div class="category-filter-bar mb-4">
+        <button class="category-pill" 
+                [class.active-category]="selectedCategory === 'all'" 
+                (click)="filterByCategory('all')">
+            Tous les types
+        </button>
+        <button class="category-pill" 
+                *ngFor="let cat of availableCategories" 
+                [class.active-category]="selectedCategory === cat" 
+                (click)="filterByCategory(cat)">
+            {{ cat }}
+        </button>
+
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" 
+                   placeholder="Rechercher un plat par son nom..." 
+                   [(ngModel)]="searchQuery" 
+                   (input)="onSearchChange()">
+        </div>
+    </div>
+
+        <div class="dishes-grid">
+            <div class="dish-manage-card" 
+                 *ngFor="let dish of filteredDishes" 
+                 [class.dish-disabled]="!dish.isActive">
+                
+                <!-- IMAGE DU PLAT AVEC FLOU S'IL EST DESACTIVÉ -->
+                <div class="dish-card-image-wrapper">
+                    <img [src]="dish.imageUrl || 'assets/images/default-food.jpg'" [alt]="dish.name">
+                    <div class="disabled-overlay-blur" *ngIf="!dish.isActive">
+                        <span><i class="bi bi-eye-slash-fill"></i> Masqué pour le client</span>
+                    </div>
+                </div>
+
+                <!-- CORPS DE LA CARTE -->
+                <div class="dish-card-body">
+                    <div>
+                        <!-- Badge de catégorie dynamique sur la carte -->
+                        <span class="dish-card-category-badge">{{ dish.category }}</span>
+                        <div class="dish-main-info mt-1">
+                            <h4>{{ dish.name }}</h4>
+                            <span class="dish-price-tag">{{ dish.price | number }} F</span>
+                        </div>
+                        <p class="dish-description-text">{{ dish.description || 'Aucune description fournie.' }}</p>
+                    </div>
+                    
+                    <!-- BARRE DE GESTION ADMINISTRATIVE DE LA CARTE -->
+                    <div class="dish-card-actions">
+                        <!-- BOUTONS DE MODIFICATION -->
+                        <button class="btn-edit-dish" (click)="onEditDish(dish)" title="Modifier les détails du plat">
+                            <i class="bi bi-pencil-square"></i> Modifier
+                        </button>
+
+                        <!-- ACTIONS TOGGLE INTERRUPTEUR PROFESSIONNEL -->
+                        <div class="form-check form-switch bama-custom-switch">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   role="switch" 
+                                   [id]="'switch-' + dish.id"
+                                   [checked]="dish.isActive"
+                                   (change)="toggleDishStatus(dish)">
+                            <label class="form-check-label" [for]="'switch-' + dish.id">
+                                {{ dish.isActive ? 'En ligne' : 'Hors ligne' }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAS OÙ LE FILTRE OU LA RECHERCHE NE RENVOIE RIEN -->
+        <div *ngIf="filteredDishes.length === 0" class="empty-catalog-box">
+            <i class="bi bi-search-heart"></i>
+            <p>Aucun plat ne correspond à vos filtres de sélection, catégories ou recherche actuelle.</p>
+        </div>
+    </section>
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- MODALE DE MODIFICATION DE PLAT (ÉDITION)   -->
+<!-- ========================================== -->
+<div class="bama-modal-overlay small-screen modal-m" *ngIf="showEditModal">
+  <div class="bama-modal-card edit-modal animated-zoom-in">
+    
+    <!-- En-tête de la modale -->
+    <div class="modal-header-edit">
+      <h3><i class="bi bi-pencil-square text-gold"></i> Modifier le Plat</h3>
+      <button class="btn-close-modal" (click)="closeEditModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Erreur interne à la modale -->
+    <div *ngIf="modalErrorMessage" class="alert alert-danger py-1 small mb-2">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ modalErrorMessage }}
+    </div>
+
+    <!-- Formulaire d'édition -->
+    <form [formGroup]="editForm" (ngSubmit)="onUpdateSubmit()">
+      <div class="row g-3 text-start">
+        
+        <!-- Colonne image -->
+        <div class="col-12 col-md-5">
+          <div class="image-upload-wrapper">
+            <label class="image-drag-area" style="height: 140px;">
+              <input type="file" (change)="onModalFileSelected($event)" accept="image/*" hidden>
+              
+              <img [src]="modalImagePreview" class="upload-preview-img" alt="Aperçu du plat">
+              
+              <div class="change-overlay" style="opacity: 1; background: rgba(0,0,0,0.4);">
+                <i class="bi bi-camera-fill"></i> Changer
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Colonne inputs -->
+        <div class="col-12 col-md-7">
+          <div class="form-grid-modal">
+            
+            <!-- Nom -->
+            <div class="input-group-custom-modal mb-2">
+              <label>Nom du plat <span class="text-gold">*</span></label>
+              <input type="text" formControlName="name" placeholder="Nom du plat" required>
+            </div>
+
+            <!-- Catégorie -->
+            <div class="input-group-custom-modal mb-2">
+              <label>Catégorie <span class="text-gold">*</span></label>
+              <select formControlName="category" required>
+                <option *ngFor="let cat of availableCategories" [value]="cat">{{ cat }}</option>
+              </select>
+            </div>
+
+            <!-- Prix -->
+            <div class="input-group-custom-modal mb-2">
+              <label>Prix (FCFA) <span class="text-gold">*</span></label>
+              <input type="number" formControlName="price" placeholder="Ex: 3500" required>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Description (Plein écran) -->
+        <div class="col-12">
+          <div class="input-group-custom-modal mb-2">
+            <label>Description du plat</label>
+            <textarea formControlName="description" rows="2" placeholder="Décrivez le plat..."></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions de fermeture et de sauvegarde de la modale -->
+      <div class="modal-actions-group">
+        <button type="button" class="btn-modal-cancel" (click)="closeEditModal()">Annuler</button>
+        <button type="submit" class="btn-modal-save" [disabled]="isUpdating">
+          <span *ngIf="isUpdating" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          {{ isUpdating ? 'Mise à jour...' : 'Sauvegarder' }}
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

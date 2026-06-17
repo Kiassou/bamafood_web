@@ -1,0 +1,248 @@
+<div *ngIf="isLoading" class="profile-loading">
+  <div class="spinner-border text-warning loader-spin" role="status"></div>
+  <p class="loader-text">Chargement de votre profil BamaFood...</p>
+</div>
+
+<div class="profile-wrapper" *ngIf="!isLoading">
+  <aside class="profile-sidebar">
+    <div class="sidebar-glow"></div>
+
+    <div class="profile-banner">
+
+  <div class="profile-banner-left">
+
+    <div class="banner-avatar">
+      <img *ngIf="imagePreview" [src]="imagePreview" alt="Avatar">
+
+      <div *ngIf="!imagePreview" class="banner-default-avatar">
+        <i class="bi bi-person-fill"></i>
+      </div>
+    </div>
+
+    <div class="banner-user-info">
+      <h1>{{ currentUser?.firstName }} {{ currentUser?.lastName }}</h1>
+
+      <p>
+        @{{ currentUser?.username }}
+      </p>
+
+      <span class="role-badge">
+        {{ currentUser?.role }}
+      </span>
+
+      <span class="user-badge">
+        ID: #BF-0{{ currentUser?.id }}
+      </span>
+    </div>
+
+  </div>
+
+  
+</div>
+
+
+    <div class="profile-menu">
+      <a (click)="scrollToSection('infos')" [ngClass]="{'active': activeSection === 'infos'}" class="menu-link">
+        <i class="bi bi-person-fill"></i> Informations
+      </a>
+      <a (click)="scrollToSection('security')" [ngClass]="{'active': activeSection === 'security'}" class="menu-link">
+        <i class="bi bi-shield-lock-fill"></i> Sécurité
+      </a>
+      <a (click)="scrollToSection('history')" [ngClass]="{'active': activeSection === 'history'}" class="menu-link">
+        <i class="bi bi-clock-history"></i> Historique
+      </a>
+    </div>
+
+    <button (click)="navigateToDashboard()" class="back-btn">
+      <i class="bi bi-arrow-left"></i> Retour Dashboard
+    </button>
+  </aside>
+
+  <main class="profile-content">
+    <div class="profile-header">
+      <div>
+        <h1>Mon Profil 👤</h1>
+        <p>Inscrit depuis le {{ currentUser?.createdAt | date:'dd/MM/yyyy à HH:mm' }}</p>
+      </div>
+
+      <button type="submit" form="profileForm" class="save-btn" [disabled]="profileForm.invalid">
+        <i class="bi bi-check-lg"></i> Sauvegarder
+      </button>
+    </div>
+
+    <div class="profile-card" id="infos">
+      <div class="card-title">
+        <h3>Informations personnelles</h3>
+      </div>
+
+      <form [formGroup]="profileForm" id="profileForm" (ngSubmit)="onSubmit()">
+        <div class="image-upload-area">
+          <img *ngIf="imagePreview" [src]="imagePreview" class="upload-preview" alt="Aperçu">
+          <div *ngIf="!imagePreview" class="upload-placeholder">
+            <i class="bi bi-camera-fill"></i>
+          </div>
+          <label class="upload-btn">
+            Changer photo
+            <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
+          </label>
+        </div>
+
+        <div class="profile-grid">
+          <div class="input-group-custom">
+            <label>Nom</label>
+            <input type="text" formControlName="lastName" required>
+          </div>
+
+          <div class="input-group-custom">
+            <label>Prénom</label>
+            <input type="text" formControlName="firstName" required>
+          </div>
+
+          <div class="input-group-custom">
+            <label>Nom d'utilisateur</label>
+            <input type="text" [value]="currentUser?.username" disabled class="disabled-input">
+          </div>
+
+          <div class="input-group-custom">
+            <label>Email</label>
+            <input type="email" [value]="currentUser?.email" disabled class="disabled-input">
+          </div>
+
+          <div class="input-group-custom">
+            <label>Téléphone</label>
+            <input type="text" formControlName="phone" placeholder="+223 XX XX XX XX">
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="profile-card" id="security">
+      <div class="card-title">
+        <h3>Sécurité & Statut 🔒</h3>
+      </div>
+
+      <div class="security-grid">
+        <div class="security-item">
+          <div>
+            <h4>Mot de passe</h4>
+            <p>Protégé par un chiffrement fort et sécurisé</p>
+          </div>
+          <a (click)="openChangePasswordModal()" class="btn-action-link">Modifier</a>
+        </div>
+
+        <div class="security-item">
+          <div>
+            <h4>Vérification OTP</h4>
+            <p>{{ currentUser?.isVerified === 1 ? 'Votre compte est pleinement vérifié' : 'Adresse email ou numéro non validé' }}</p>
+          </div>
+          <button type="button"
+                  [class.active-btn]="currentUser?.isVerified === 1"
+                  [style.background]="currentUser?.isVerified === 0 ? 'rgba(255,184,0,0.15)' : ''"
+                  [style.color]="currentUser?.isVerified === 0 ? 'var(--gold)' : ''">
+            {{ currentUser?.isVerified === 1 ? 'Vérifié ✓' : 'En attente (0)' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-card" id="history">
+      <div class="card-title">
+        <h3>Activité récente 📦</h3>
+      </div>
+
+      <div class="history-list">
+        <div class="history-item">
+          <div class="history-icon">
+            <i class="bi bi-cart-check-fill"></i>
+          </div>
+          <div>
+            <h4>Session Connectée</h4>
+            <p>Rôle d'accès utilisateur détecté : {{ currentUser?.role }}</p>
+          </div>
+          <span class="recent-tag">En ligne</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ==========================================================
+     MODAL - CHANGEMENT DE MOT DE PASSE
+     ========================================================== -->
+<div class="modal-overlay" *ngIf="showChangePasswordModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Changer le mot de passe 🔐</h3>
+      <button (click)="closeChangePasswordModal()" class="close-btn">&times;</button>
+    </div>
+
+    <form [formGroup]="changePasswordForm" (ngSubmit)="onPasswordChange()">
+      <p style="font-size: 14px; color: #6b7280; margin-bottom: 15px;">
+        Veuillez saisir votre mot de passe actuel et le nouveau mot de passe.
+      </p>
+
+      <!-- Mot de passe actuel -->
+      <div class="input-group-custom">
+        <label>Mot de passe actuel *</label>
+        <div class="password-input">
+          <input [type]="showCurrentPassword ? 'text' : 'password'"
+                 formControlName="currentPassword"
+                 placeholder="Entrez votre ancien mot de passe"
+                 [class.invalid]="changePasswordForm.get('currentPassword')?.touched && changePasswordForm.get('currentPassword')?.invalid">
+          <i class="bi"
+             [class.bi-eye]="showCurrentPassword"
+             [class.bi-eye-slash]="!showCurrentPassword"
+             (click)="toggleCurrentPasswordVisibility()"></i>
+        </div>
+        <div *ngIf="passwordError" class="password-error">
+          {{ passwordError }}
+        </div>
+      </div>
+
+      <!-- Nouveau mot de passe -->
+      <div class="input-group-custom">
+        <label>Nouveau mot de passe *</label>
+        <div class="password-input">
+          <input [type]="showNewPassword ? 'text' : 'password'"
+                 formControlName="newPassword"
+                 placeholder="Au moins 6 caractères"
+                 [class.invalid]="changePasswordForm.get('newPassword')?.touched && changePasswordForm.get('newPassword')?.invalid">
+          <i class="bi"
+             [class.bi-eye]="showNewPassword"
+             [class.bi-eye-slash]="!showNewPassword"
+             (click)="toggleNewPasswordVisibility()"></i>
+        </div>
+        <div *ngIf="changePasswordForm.get('newPassword')?.touched && changePasswordForm.get('newPassword')?.invalid" class="password-error">
+          Le mot de passe doit contenir au moins 6 caractères
+        </div>
+      </div>
+
+      <!-- Confirmation mot de passe -->
+      <div class="input-group-custom">
+        <label>Confirmer le nouveau mot de passe *</label>
+        <div class="password-input">
+          <input [type]="showConfirmPassword ? 'text' : 'password'"
+                 formControlName="confirmPassword"
+                 placeholder="Retapez le nouveau mot de passe"
+                 [class.invalid]="changePasswordForm.get('confirmPassword')?.touched && changePasswordForm.get('confirmPassword')?.invalid">
+          <i class="bi"
+             [class.bi-eye]="showConfirmPassword"
+             [class.bi-eye-slash]="!showConfirmPassword"
+             (click)="toggleConfirmPasswordVisibility()"></i>
+        </div>
+        <div *ngIf="changePasswordForm.get('confirmPassword')?.touched && changePasswordForm.get('confirmPassword')?.invalid" class="password-error">
+          Les mots de passe ne correspondent pas
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" (click)="closeChangePasswordModal()" class="btn-cancel">
+          Annuler
+        </button>
+        <button type="submit" [disabled]="changePasswordForm.invalid || isSubmittingPassword" class="btn-submit">
+          <i class="bi bi-save"></i> {{ isSubmittingPassword ? 'Modification...' : 'Modifier' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

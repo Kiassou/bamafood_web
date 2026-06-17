@@ -1,0 +1,413 @@
+<div class="sidebar-overlay"
+     [class.active]="isSidebarOpen"
+     (click)="closeSidebar()">
+</div>
+
+<aside class="sidebar"
+       [class.closed]="isSidebarClosed"
+       [class.active]="isSidebarOpen">
+
+    <div>
+        <div class="sidebar-top">
+            <h1 class="logo">
+                <span class="first-letter">B</span>
+                <span class="logo-text">
+                    ama<span>Food</span>
+                </span>
+            </h1>
+            <button class="close-sidebar d-lg-none" (click)="closeSidebar()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <ul class="menu">
+            <li class="active">
+                <a [routerLink]="['/client/dashboard']">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/client/commander']">
+                    <i class="bi bi-basket2-fill"></i>
+                    <span>Commander</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/client/cart']">
+                    <i class="bi bi-cart-fill"></i>
+                    <span>Mon panier</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/client/orders']">
+                    <i class="bi bi-bag-fill"></i>
+                    <span>Mes commandes</span>
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="['/client/favorites']">
+                    <i class="bi bi-heart-fill"></i>
+                    <span>Favoris</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+    <button class="logout-btn" (click)="openLogoutModal()">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Déconnexion</span>
+    </button>
+</aside>
+
+<main class="main-content">
+
+    <!-- SKELETON LOADER CHIC (Pendant le chargement) -->
+    <div *ngIf="isLoading" class="manager-skeleton-container">
+        <div class="mt-2">
+            <div class="skeleton-box (big-card)" style="height: 80px; border-radius: 24px;"></div>
+        </div>
+        <div class="stats-grid mt-4">
+            <div class="skeleton-box (stat-card)" style="height: 125px; border-radius: 24px;"></div>
+            <div class="skeleton-box (stat-card)" style="height: 125px; border-radius: 24px;"></div>
+            <div class="skeleton-box (stat-card)" style="height: 125px; border-radius: 24px;"></div>
+            <div class="skeleton-box (stat-card)" style="height: 125px; border-radius: 24px;"></div>
+        </div>
+        <div class="cards-grid mt-4">
+            <div class="skeleton-box (big-card)" style="height: 250px; border-radius: 24px;"></div>
+            <div class="skeleton-box (big-card)" style="height: 250px; border-radius: 24px;"></div>
+        </div>
+    </div>
+
+   <div class="topbar"  *ngIf="!isLoading" [class.animated-fade-in]="!isLoading">
+    <div class="topbar-left">
+        <button class="menu-toggle" (click)="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </button>
+        <div>
+            <h2>Bienvenue, {{ username }}</h2>
+            <p>Découvrez les meilleurs plats 🔥</p>
+        </div>
+    </div>
+
+    <div class="topbar-right"  *ngIf="!isLoading" [class.animated-fade-in]="!isLoading">
+
+        <button class="icon-btn position-relative" routerLink="/notification">
+            <i class="bi bi-bell-fill"></i>
+            <span *ngIf="notificationCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">
+                {{ notificationCount }}
+            </span>
+        </button>
+
+        <button routerLink="/client/cart" class="icon-btn position-relative text-decoration-none">
+            <i class="bi bi-cart-fill"></i>
+            <span *ngIf="cartCount > 0" 
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill cart-badge">
+                {{ cartCount }}
+            </span>
+        </button>
+
+        <button class="icon-btn" (click)="openProfileModal()">
+            <i class="bi bi-people-fill"></i>
+        </button>
+    </div>
+</div>
+
+    <div class="stats-grid"  *ngIf="!isLoading" [class.animated-fade-in]="!isLoading">
+
+        <div class="stat-card">
+            <i class="bi bi-bag-check"></i>
+            <h3>{{ stats.ordersCount }}</h3>
+            <p>Commandes</p>
+        </div>
+
+        <div class="stat-card">
+            <i class="bi bi-hourglass-split"></i>
+            <h3>{{ stats.enAttenteCount }}</h3>
+            <p>En Attente</p>
+        </div>
+
+        <div class="stat-card">
+            <i class="bi bi-truck"></i>
+            <h3>{{ stats.deliveryCount }}</h3>
+            <p>En livraison</p>
+        </div>
+
+        <div class="stat-card">
+            <i class="bi bi-heart"></i>
+            <h3>{{ stats.favoritesCount }}</h3>
+            <p>Favoris</p>
+        </div>
+    </div>
+
+    <div class="cards-grid"  *ngIf="!isLoading" [class.animated-fade-in]="!isLoading">
+        <div class="big-card">
+            <div>
+                <div class="card-title">
+                    <i class="bi bi-stars"></i>
+                    <h4>Plats du jour</h4>
+                </div>
+                <p>
+                    Les suggestions spéciales et réductions exclusives
+                    concoctées par nos gérants partenaires.
+                </p>
+            </div>
+            <a (click)="openHolyDishesModal()" style="cursor: pointer;">
+                Voir plus
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="big-card">
+            <div>
+                <div class="card-title">
+                    <i class="bi bi-clock-history"></i>
+                    <h4>Activités récentes</h4>
+                </div>
+                <p>
+                    Retrouvez vos dernières commandes
+                    et vos restaurants consultés.
+                </p>
+            </div>
+            <a (click)="openActivityModal()" style="cursor: pointer;">
+                Voir plus
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- HOLY DISHES MODAL -->
+    <div class="holy-dishes-modal-overlay" *ngIf="showHolyDishesModal" (click)="closeHolyDishesModal()">
+        <div class="holy-dishes-modal-card" (click)="$event.stopPropagation()">
+            <div class="holy-dishes-modal-icon">
+                <i class="bi bi-stars"></i>
+            </div>
+
+            <h3>Plats du jour</h3>
+            <p>Découvrez les plats du jour</p>
+            <div class="holy-dishes-modal-actions">
+                <button class="btn-cancel-holy-dishes" (click)="closeHolyDishesModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTIVITY MODAL -->
+    <div class="activity-modal-overlay" *ngIf="showActivityModal" (click)="closeActivityModal()">
+        <div class="activity-modal-card" (click)="$event.stopPropagation()">
+            <div class="activity-modal-icon">
+                <i class="bi bi-clock-history"></i>
+            </div>
+
+            <h3>Activités récentes</h3>
+            <p>Retrouvez vos dernières commandes
+                et vos restaurants consultés.
+            </p>
+
+            <div class="activity-modal-actions">
+                <button class="btn-cancel-activity" (click)="closeActivityModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL DE CONFIRMATION DE DÉCONNEXION -->
+    <div class="logout-modal-overlay" *ngIf="showLogoutModal" (click)="closeLogoutModal()">
+        <div class="logout-modal-card" (click)="$event.stopPropagation()">
+            <div class="logout-modal-icon">
+                <i class="bi bi-power"></i>
+            </div>
+
+            <h3>Confirmer la déconnexion</h3>
+            <p>Voulez-vous vraiment quitter votre session BamaFood ?</p>
+
+            <div class="logout-modal-actions">
+                <button class="btn-cancel-logout" (click)="closeLogoutModal()">Annuler</button>
+                <button class="btn-confirm-logout" (click)="confirmLogout()">
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PROFILE -->
+<div class="profile-modal-overlay" *ngIf="showProfileModal" (click)="closeProfileModal()">
+  <div class="profile-modal-card" (click)="$event.stopPropagation()">
+    <div class="profile-modal-icon">
+      <i class="bi bi-person-fill"></i>
+    </div>
+
+    <h3>Mon profil</h3>
+    <p>Mes informations BamaFood</p>
+
+    <div class="profile-info">
+        <div><strong>Nom :</strong> {{ currentUser?.last_name || '—' }}</div>
+        <div><strong>Prénom :</strong> {{ currentUser?.first_name || '—' }}</div>
+        <div><strong>Nom d'utilisateur :</strong> {{ currentUser?.username || '—' }}</div>
+        <div><strong>Email :</strong> {{ currentUser?.email || '—' }}</div>
+        <div><strong>Téléphone :</strong> {{ currentUser?.phone || '—' }}</div>
+        <div><strong>Rôle :</strong> {{ currentUser?.role || '—' }}</div>
+        <span style="font-size: 10px; text-align: right;">Iscrit depuis le : {{ currentUser?.createdAt | date:'dd/MM/yyyy à HH:mm' }}</span>
+    </div>
+
+    <div class="profile-modal-actions">
+      <button class="btn-cancel-profile" (click)="closeProfileModal()">Fermer</button>
+      <button class="btn-confirm-profile" (click)="openProfileUpdate()">
+        Modifier
+      </button>
+    </div>
+  </div>
+</div>
+
+    <!-- MODAL UPDATE PROFILE -->
+<div class="profile-update-modal-overlay" *ngIf="showProfileUpdateModal" (click)="closeProfileUpdateModal()">
+  <div class="profile-update-modal-card" (click)="$event.stopPropagation()">
+    <div class="profile-update-modal-icon">
+      <i class="bi bi-person-fill"></i>
+    </div>
+
+    <h3>Modifier le profil</h3>
+    <p>Mettre à jour vos informations</p>
+
+    <form #profileForm="ngForm" (ngSubmit)="confirmProfileUpdate()">
+      <div class="mb-3">
+        <label class="form-label">Nom</label>
+        <input class="form-control" [(ngModel)]="profileUpdate.last_name" name="last_name">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Prénom</label>
+        <input class="form-control" [(ngModel)]="profileUpdate.first_name" name="first_name">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nom d'utilisateur</label>
+        <input class="form-control" [(ngModel)]="profileUpdate.username" name="username">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" [(ngModel)]="profileUpdate.email" name="email">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Téléphone</label>
+        <input class="form-control" [(ngModel)]="profileUpdate.phone" name="phone">
+      </div>
+
+      <hr class="my-4">
+
+      <h6 class="mb-3">Changer le mot de passe</h6>
+
+      <div class="mb-3">
+        <label class="form-label">Ancien mot de passe</label>
+        <input class="form-control" type="password" [(ngModel)]="profileUpdate.oldPassword" name="oldPassword" autocomplete="current-password">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nouveau mot de passe</label>
+        <input class="form-control" type="password" [(ngModel)]="profileUpdate.newPassword" name="newPassword" autocomplete="new-password">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Confirmer le nouveau mot de passe</label>
+        <input class="form-control" type="password" [(ngModel)]="profileUpdate.confirmPassword" name="confirmPassword" autocomplete="new-password">
+      </div>
+
+      <div class="profile-update-modal-actions">
+        <button type="button" class="btn-cancel-profile-update" (click)="closeProfileUpdateModal()">Annuler</button>
+        <button type="submit" class="btn-confirm-profile-update">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- MODAL UPDATE PROFILE -->
+<!-- MODAL UPDATE PROFILE -->
+<div class="profile-update-modal-overlay" *ngIf="showProfileUpdateModal" (click)="closeProfileUpdateModal()">
+  <div class="profile-update-modal-card" (click)="$event.stopPropagation()">
+    <div class="profile-update-modal-icon">
+      <i class="bi bi-person-fill"></i>
+    </div>
+
+    <h3>Modifier le profil</h3>
+    <p>Mettre à jour vos informations</p>
+
+    <form #profileForm="ngForm" (ngSubmit)="confirmProfileUpdate()" novalidate>
+        <div class="row">
+            <div class="col-md-6">
+        <label class="form-label">Nom</label>
+        <input class="form-control" [(ngModel)]="profileUpdate.last_name" name="last_name" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Prénom</label>
+        <input class="form-control" [(ngModel)]="profileUpdate.first_name" name="first_name" required>
+      </div>
+
+        </div>
+      <div class="row">
+          <div class="col-md-6">
+              <label class="form-label">Nom d'utilisateur</label>
+              <input class="form-control" [(ngModel)]="profileUpdate.username" name="username" disabled>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Téléphone</label>
+            <input class="form-control" [(ngModel)]="profileUpdate.phone" name="phone">
+          </div>
+      </div>
+
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" [(ngModel)]="profileUpdate.email" name="email" required>
+      </div>
+
+
+      <hr class="my-4">
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="togglePasswordFields" 
+        [(ngModel)]="showPasswordFields" name="showPasswordFields">
+        <label class="form-check-label" for="togglePasswordFields">
+            Changer le mot de passe
+        </label>
+      </div>
+      <div *ngIf="showPasswordFields">
+        <div class="mb-3">
+            <label class="form-label">Ancien mot de passe</label>
+            <input class="form-control" type="password" 
+            [(ngModel)]="profileUpdate.oldPassword" 
+            name="oldPassword" autocomplete="current-password">
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Nouveau mot de passe</label>
+                <input class="form-control" type="password" 
+                [(ngModel)]="profileUpdate.newPassword" 
+                name="newPassword" autocomplete="new-password">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Confirmer mot de passe</label>
+                <input class="form-control" type="password" 
+                [(ngModel)]="profileUpdate.confirmPassword" 
+                name="confirmPassword" autocomplete="new-password">
+            </div>
+        </div>
+      </div>
+    
+      <div class="profile-update-modal-actions">
+        <button type="button" class="btn-cancel-profile-update" (click)="closeProfileUpdateModal()">Annuler</button>
+        <button type="submit" [disabled]="profileForm.invalid || isSubmittingProfile" class="btn-confirm-profile-update">
+            <i class="bi bi-save"></i>
+            {{ isSubmittingProfile ? 'Enregistrement...' : 'Enregistrer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</main>

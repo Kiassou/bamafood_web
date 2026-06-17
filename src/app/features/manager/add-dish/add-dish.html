@@ -1,0 +1,132 @@
+<main class="main-content">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" (click)="onReturnToList()" title="Retour à la liste des plats">
+        <i class="bi bi-arrow-left-circle"></i>
+      </button>
+      <div>
+        <h2>Nouveau Plat</h2>
+        <p>Ajoutez une merveille culinaire au menu de BamaFood 🔥</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="animated-fade-in">
+    <div class="form-container">
+      <form [formGroup]="dishForm" (ngSubmit)="onSubmit()">
+        <div class="row g-4">
+          
+          <div class="col-12 col-lg-4 text-center">
+            <div class="image-upload-wrapper">
+              <label class="image-drag-area" [class.has-image]="imagePreview">
+                <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
+                
+                <img *ngIf="imagePreview" [src]="imagePreview" class="upload-preview-img" alt="Aperçu du plat">
+                
+                <div *ngIf="!imagePreview" class="upload-placeholder">
+                  <i class="bi bi-cloud-arrow-up-fill text-gold"></i>
+                  <h5>Sélectionner l'image</h5>
+                  <p>PNG, JPG ou JPEG (Format 4:3 recommandé)</p>
+                </div>
+                
+                <div class="change-overlay" *ngIf="imagePreview">
+                  <i class="bi bi-camera-fill"></i> Changer de photo
+                </div>
+              </label>
+            </div>
+            <div *ngIf="submitted && !imagePreview" class="text-danger small mt-2">
+              <i class="bi bi-exclamation-circle-fill"></i> L'image du plat est requise.
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-8">
+            <div class="form-grid">
+              <div class="input-group-custom">
+                <label>Catégorie <span class="required">*</span></label>
+                <select formControlName="category" required>
+                  <option value="" disabled selected>-- Choisir une catégorie --</option>
+                  <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                </select>
+                <div *ngIf="submitted && f['category'].errors" class="error-msg">
+                  Veuillez sélectionner une catégorie.
+                </div>
+              </div>
+              
+              <div class="input-group-custom">
+                <label>Nom du plat <span class="required">*</span></label>
+                <input type="text" formControlName="name" placeholder="Ex: Tchep au Poulet Croustillant" required>
+                <div *ngIf="submitted && f['name'].errors" class="error-msg">
+                  Le nom du plat est requis.
+                </div>
+              </div>
+
+              <div class="input-group-custom">
+                <label>Prix (FCFA) <span class="required">*</span></label>
+                <input type="number" formControlName="price" placeholder="Ex: 3500" required>
+                <div *ngIf="submitted && f['price'].errors" class="error-msg">
+                  Le prix doit être un nombre positif valide.
+                </div>
+              </div>
+
+              <div class="input-group-custom full-width">
+                <label>Description du plat</label>
+                <textarea formControlName="description" rows="4" placeholder="Décrivez les ingrédients, les accompagnements, etc..."></textarea>
+              </div>
+
+              <div class="input-group-custom full-width d-flex align-items-center gap-3 mt-2">
+                <label class="mb-0">Rendre ce plat directement visible pour les clients :</label>
+                <div class="form-check form-switch bama-custom-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" formControlName="isActive" id="initialStatus">
+                  <label class="form-check-label" for="initialStatus">
+                    {{ dishForm.get('isActive')?.value ? 'Visible' : 'Masqué' }}
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-actions-bar">
+              <button type="button" class="btn-cancel" (click)="onReturnToList()">Annuler</button>
+              <button type="submit" class="btn-save-dish" [disabled]="isSaving">
+                <i class="bi bi-check-lg" *ngIf="!isSaving"></i>
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ isSaving ? 'Enregistrement...' : 'Ajouter à la carte' }}
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="bama-modal-overlay" *ngIf="showSuccessModal">
+    <div class="bama-modal-card animated-zoom-in">
+      <div class="success-icon-wrapper">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      
+      <h3>Plat ajouté avec succès !</h3>
+      <p class="modal-sub">Le plat est désormais disponible sur BamaFood.</p>
+
+      <div class="dish-receipt-card" *ngIf="createdDish">
+        <img *ngIf="imagePreview" [src]="imagePreview" alt="Aperçu final">
+        <div class="receipt-info">
+          <h4>{{ createdDish.name }}</h4>
+          <span class="category-badge">{{ createdDish.category }}</span>
+          <p class="price-value">{{ createdDish.price | number }} FCFA</p>
+        </div>
+      </div>
+
+      <div class="modal-buttons-group">
+        <button type="button" class="btn-modal-action secondary-modal-btn" (click)="resetFormAndStay()">
+          <i class="bi bi-plus-circle"></i> Ajouter d'autres
+        </button>
+        <button type="button" class="btn-modal-action primary-modal-btn" (click)="goToMenu()">
+          <i class="bi bi-egg-fried"></i> Voir le menu
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

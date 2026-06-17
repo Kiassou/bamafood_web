@@ -1,0 +1,102 @@
+<div class="activity-page">
+  <div class="activity-bg"></div>
+
+  <div class="activity-container">
+    <header class="activity-header">
+      <div class="header-left">
+        <button routerLink="/manager/dashboard" class="back-btn">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <div class="title-block">
+          <h1>Journal d'activités</h1>
+          <p>Suivez en temps réel les actions du système BamaFood</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="applyFilters()"
+            placeholder="Rechercher une action..."
+          >
+        </div>
+
+        <div class="filter-box">
+          <i class="bi bi-funnel-fill"></i>
+          <select [(ngModel)]="filterType" (change)="applyFilters()">
+            <option value="ALL">Tous les types</option>
+            <option value="ORDER">Commandes</option>
+            <option value="STOCK">Stock/Plats</option>
+            <option value="SECURITY">Sécurité</option>
+            <option value="USER">Utilisateurs</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <section class="summary-row">
+      <div class="summary-card">
+        <i class="bi bi-bell-fill"></i>
+        <div>
+          <h3>{{ filteredActivities.length }}</h3>
+          <p>Activités visibles</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <i class="bi bi-shield-lock-fill"></i>
+        <div>
+          <h3>{{ securityCount }}</h3>
+          <p>Sécurité</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <i class="bi bi-cart-fill"></i>
+        <div>
+          <h3>{{ orderCount }}</h3>
+          <p>Commandes</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="activity-list">
+      <div class="activity-card" *ngFor="let act of filteredActivities" [ngClass]="act.severity">
+        <div class="act-icon">
+          <i class="bi" [ngClass]="{
+            'bi-cart-fill': act.type === 'ORDER',
+            'bi-box-seam': act.type === 'STOCK',
+            'bi-shield-lock-fill': act.type === 'SECURITY',
+            'bi-person-badge': act.type === 'USER'
+          }"></i>
+        </div>
+
+        <div class="act-details">
+          <div class="act-top">
+            <span class="act-user">{{ act.user }}</span>
+            <span class="act-date">{{ act.createdAt | date:'dd/MM HH:mm' }}</span>
+          </div>
+
+          <p class="act-desc">{{ act.description }}</p>
+
+          <div class="act-meta">
+            <span class="type-pill">{{ act.type }}</span>
+            <span class="severity-pill">{{ act.severity }}</span>
+          </div>
+        </div>
+
+        <div class="act-status-dot"></div>
+      </div>
+
+      <div class="empty-state" *ngIf="filteredActivities.length === 0">
+        <i class="bi bi-inbox-fill"></i>
+        <h3>Aucune activité trouvée</h3>
+        <p>Essaie de modifier la recherche ou le filtre.</p>
+      </div>
+    </div>
+  </div>
+</div>

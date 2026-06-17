@@ -1,0 +1,44 @@
+@import url("../register/register.css");
+
+.otp-container {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-top: 30px;
+}
+
+.otp-container input {
+
+    width: 60px;
+    height: 65px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    color: white;
+
+    text-align: center;
+
+    font-size: 28px;
+
+    outline: none;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    transition: 0.3s;
+}
+
+.otp-container input:focus {
+
+    border-color: #ffb800;
+
+    box-shadow:
+        0 0 10px rgba(255, 184, 0, 0.3);
+}

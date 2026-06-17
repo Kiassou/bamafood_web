@@ -1,0 +1,184 @@
+<div class="container py-5">
+  
+  <div class="mb-4">
+    <a routerLink="/client/dashboard" class="back-link small fw-bold">
+      <i class="bi bi-arrow-left me-2"></i> Retour au tableau de bord
+    </a>
+  </div>
+
+  <h1 class="mb-5 fw-bold page-title">
+    Suivi de <span class="gold-text">mes commandes</span> 📦
+  </h1>
+
+  <div class="row" *ngIf="orders.length > 0">
+    <div class="col-12 col-xl-10 mx-auto">
+        
+      <div class="order-card p-4 mb-4" *ngFor="let order of orders">
+        
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-3 header-divider">
+          <div>
+            <span class="text-muted small d-block">Numéro de commande</span>
+            <h3 class="h6 mb-0 fw-bold text-white">#BF-{{ order.id }}</h3>
+            <span class="text-muted text-opacity-70 extreme-small ">
+              Passée le {{ order.created_at | date:'dd MMM yyyy à HH:mm' }}
+            </span>
+          </div>
+
+          <div>
+            <span *ngIf="order.status === 'en_attente'" class="status-badge status-pending">
+              <i class="bi bi-hourglass-split me-1"></i> En attente
+            </span>
+            <span *ngIf="order.status === 'preparation'" class="status-badge status-preparing">
+              <i class="bi bi-fire me-1"></i> En cuisine
+            </span>
+            <span *ngIf="order.status === 'livraison'" class="status-badge status-shipping">
+              <i class="bi bi-truck me-1"></i> En cours de livraison
+            </span>
+            <span *ngIf="order.status === 'livree'" class="status-badge status-delivered">
+              <i class="bi bi-check-circle-fill me-1"></i> Livrée
+            </span>
+            <span *ngIf="order.status === 'annulee'" class="status-badge status-canceled">
+              <i class="bi bi-x-circle-fill me-1"></i> Annulée
+            </span>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="p-3 bg-dark rounded-3 icon-container">
+              <i class="bi bi-bag-fill bag-icon"></i>
+            </div>
+            <div>
+              <p class="mb-1 text-white-50 small fw-semibold">
+                {{ formatItemsList(order.items) }}
+              </p>
+              <h4 class="h5 mb-0 fw-bold gold-text">{{ order.total_price }} FCFA</h4>
+            </div>
+          </div>
+
+          <div>
+            <button *ngIf="order.status === 'livraison'"
+              type="button"
+              class="btn btn-sm px-4 py-2 fw-bold text-black btn-rider"
+              (click)="callRider(order.id)"
+              [disabled]="deliveryRequestedOrders.includes(order.id)">
+              <i class="bi bi-telephone-fill me-1"></i>
+              {{ deliveryRequestedOrders.includes(order.id) ? 'Déjà contacté' : 'Livreur' }}
+            </button>
+            
+            <button *ngIf="order.status !== 'livraison'"
+              type="button"
+              class="btn btn-sm btn-outline-secondary px-4 py-2 text-white btn-receipt"
+              (click)="viewReceipt(order.id)">
+              Voir le reçu
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="text-center py-5" *ngIf="orders.length === 0">
+    <i class="bi bi-receipt text-muted mb-3 empty-icon"></i>
+    <h2 class="h4 text-muted">Vous n'avez pas encore passé de commande</h2>
+    <p class="small text-muted mb-4">Vos délicieux repas apparaîtront ici dès que vous aurez validé un panier !</p>
+    <a routerLink="/client/cart" class="btn px-4 py-2.5 border-0 text-black fw-bold btn-order-first">
+      Commander mon premier plat
+    </a>
+  </div>
+
+</div>
+
+<div class="custom-modal-backdrop" *ngIf="showReceiptModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content receipt-modal premium-modal">
+      <div class="modal-header border-0 premium-header">
+        <div>
+          <span class="modal-badge">Reçu commande</span>
+          <h5 class="modal-title text-white fw-bold mb-1">Détails du reçu</h5>
+          <p class="text-muted small mb-0">Résumé de la commande sélectionnée.</p>
+        </div>
+
+        <button type="button" class="btn-close btn-close-white" (click)="closeReceiptModal()"></button>
+      </div>
+
+      <div class="modal-body premium-confirm-body" *ngIf="selectedReceipt; else emptyReceipt">
+        <div class="confirmation-box text-start">
+          <div class="confirm-row">
+            <span>ID commande</span>
+            <strong>{{ selectedReceipt.id }}</strong>
+          </div>
+
+          <div class="confirm-row">
+            <span>Statut</span>
+            <strong>{{ selectedReceipt.status }}</strong>
+          </div>
+
+          <div class="confirm-row">
+            <span>Client</span>
+            <strong>{{ selectedReceipt.clientName }}</strong>
+          </div>
+
+          <div class="confirm-row">
+            <span>Numéro</span>
+            <strong>{{ selectedReceipt.phoneNumber }}</strong>
+          </div>
+
+          <div class="confirm-row">
+            <span>Articles</span>
+            <strong>{{ selectedReceipt.itemsCount }}</strong>
+          </div>
+
+          <div class="confirm-row">
+            <span>Total</span>
+            <strong class="text-gold">{{ selectedReceipt.total }} FCFA</strong>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptyReceipt>
+        <div class="modal-body premium-confirm-body text-center text-muted">
+          Reçu introuvable.
+        </div>
+      </ng-template>
+
+      <div class="modal-footer border-0 premium-footer justify-content-center">
+        <button class="btn btn-close-confirm" type="button" (click)="closeReceiptModal()">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="custom-modal-backdrop" *ngIf="showDeliverySuccessModal">
+  <div class="success-modal premium-modal">
+    <div class="modal-header border-0 premium-header">
+      <div>
+        <span class="modal-badge">Succès</span>
+        <h5 class="modal-title text-white fw-bold mb-1">Livreur contacté</h5>
+        <p class="text-muted small mb-0">Un message a été envoyé avec succès.</p>
+      </div>
+
+      <button type="button" class="btn-close btn-close-white" (click)="showDeliverySuccessModal = false"></button>
+    </div>
+
+    <div class="modal-body premium-confirm-body text-center">
+      <div class="success-icon-wrap mx-auto mb-3">
+        <i class="bi bi-check-lg"></i>
+      </div>
+
+      <p class="text-white mb-2 fw-semibold">{{ deliverySuccessMessage }}</p>
+      <p class="text-muted small mb-0">Le bouton est maintenant désactivé pour éviter plusieurs envois.</p>
+    </div>
+
+    <div class="modal-footer border-0 premium-footer justify-content-center">
+      <button class="btn btn-close-confirm" type="button" (click)="showDeliverySuccessModal = false">
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>

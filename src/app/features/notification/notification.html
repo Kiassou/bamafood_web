@@ -1,0 +1,99 @@
+<div class="notif-page">
+  <div class="bg-animation"></div>
+  <div class="particles"><span *ngFor="let p of particles"></span></div>
+
+  <div class="notif-shell">
+    <div class="notif-header">
+      <div>
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn-back" (click)="navigateToDashboard()"><i class="bi bi-arrow-left"></i></button>
+          <div class="search-bar">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Rechercher..." [(ngModel)]="searchQuery" (input)="filterNotifications()">
+          </div>
+        </div>
+        <h1 class="brand-title">BAMA<span>FOOD</span></h1>
+        <p class="page-subtitle">Centre de notifications</p>
+      </div>
+      <div class="notif-badge">{{ notifications.length }} message(s)</div>
+    </div>
+
+    <div class="notif-list" *ngIf="!isLoading; else loadingTpl">
+      <div class="notif-card" *ngFor="let notif of filteredNotifications" 
+           [class.unread]="!notif.is_read" (click)="openDetails(notif)">
+        
+        <div class="notif-icon"><i class="bi bi-chat-dots-fill"></i></div>
+        
+        <div class="notif-content">
+          <div class="notif-topline">
+            <h3>{{ notif.subject }}</h3>
+            <span class="notif-time">{{ notif.created_at | date:'dd/MM HH:mm' }}</span>
+          </div>
+          <p class="notif-preview">{{ notif.message | slice:0:95 }}{{ notif.message?.length > 95 ? '...' : '' }}</p>
+          <div class="notif-meta">
+            <span><i class="bi bi-person-circle"></i> {{ notif.first_name }} {{ notif.last_name }}</span>
+            <span><i class="bi bi-shield-check"></i> {{ notif.sender_role || 'Utilisateur' }}</span>
+          </div>
+        </div>
+        
+        <div class="notif-chevron"><i class="bi bi-chevron-right"></i></div>
+      </div>
+
+      <div class="empty-state" *ngIf="filteredNotifications.length === 0">
+        <i class="bi bi-inbox-fill"></i>
+        <h3>Aucune notification</h3>
+      </div>
+    </div>
+
+    <ng-template #loadingTpl>
+      <div class="loading-box">
+        <div class="spinner-border text-warning"></div>
+        <p>Chargement des notifications...</p>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<div class="notif-modal-overlay" *ngIf="showDetailsModal" (click)="closeDetails()">
+  <div class="notif-modal-card" (click)="$event.stopPropagation()">
+    <div class="notif-modal-header">
+      <div class="notif-modal-icon"><i class="bi bi-envelope-paper-fill"></i></div>
+      <button class="btn-close-modal" (click)="closeDetails()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <h2>{{ selectedNotification?.subject }}</h2>
+    
+    <div class="sender-card">
+      <div class="sender-avatar">{{ getSenderInitials(selectedNotification) }}</div>
+      <div class="sender-info">
+        <strong>{{ selectedNotification?.first_name }} {{ selectedNotification?.last_name }}</strong>
+        <span>{{ selectedNotification?.sender_role || 'Utilisateur' }}</span>
+      </div>
+    </div>
+
+    <p class="notif-full-message">{{ selectedNotification?.message }}</p>
+
+    <textarea class="reply-input" rows="3" placeholder="Écrire une réponse..." [(ngModel)]="replyMessage"></textarea>
+
+    <div class="modal-actions-group">
+      <button class="btn-modal-reply" (click)="replyToNotification()" [disabled]="isSending">
+        <i class="bi bi-send-fill"></i> {{ isSending ? 'Envoi...' : 'Répondre' }}
+      </button>
+      <button class="btn-modal-delete" (click)="openDeleteModal(selectedNotification)">
+        <i class="bi bi-trash3-fill"></i> Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="notif-modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="notif-modal-card confirm-card" (click)="$event.stopPropagation()">
+    <div class="confirm-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <h2>Confirmer la suppression</h2>
+    <p>Ce message sera supprimé de votre boîte.</p>
+    <div class="modal-actions-group">
+      <button class="btn-modal-cancel" (click)="closeDeleteModal()">Annuler</button>
+      <button class="btn-modal-delete" (click)="confirmDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>

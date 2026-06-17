@@ -1,0 +1,194 @@
+<main class="main-content">
+  <!-- EN-TÊTE AVEC RETOUR DASHBOARD -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" (click)="backToDashboard()" title="Retour au tableau de bord">
+        <i class="bi bi-arrow-left-circle"></i>
+      </button>
+      <div>
+        <h2>Gestion des Commandes</h2>
+        <p>Pilotez la préparation et le suivi de livraison en temps réel 🎯</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKELETON LOADER EN CAS DE CHARGEMENT -->
+<div *ngIf="isLoading" class="manager-skeleton-container">
+    <div class="stat-grid">
+        <div class="skeleton-box" style="height: 145px; border-radius: 24px;"></div>
+        <div class="skeleton-box" style="height: 145px; border-radius: 24px;"></div>
+        <div class="skeleton-box" style="height: 145px; border-radius: 24px;"></div>
+    </div>
+    <div class="skeleton-box mt-4" style="height: 300px; border-radius: 24px;"></div>
+</div>
+
+  <!-- ZONE DES 6 CARTES STATISTIQUES INTERACTIVES -->
+  <div *ngIf="!isLoading" class="orders-stats-cards mb-4">
+      <!-- TOUTES -->
+      <div class="stat-card all" [class.active-filter]="currentFilter === 'all'" (click)="setFilter('all')">
+        <i class="bi bi-receipt"></i>
+        <h3>{{ allCount }}</h3>
+        <p>Toutes</p>
+      </div>
+
+      <!-- EN ATTENTE -->
+      <div class="stat-card pending" [class.active-filter]="currentFilter === 'en_attente'" (click)="setFilter('en_attente')">
+        <i class="bi bi-hourglass-split"></i>
+        <h3>{{ pendingCount }}</h3>
+        <p>En attente</p>
+      </div>
+
+      <!-- EN CUISINE -->
+      <div class="stat-card preparing" [class.active-filter]="currentFilter === 'preparation'" (click)="setFilter('preparation')">
+        <i class="bi bi-fire"></i>
+        <h3>{{ preparingCount }}</h3>
+        <p>En cuisine</p>
+      </div>
+
+      <!-- EN LIVRAISON -->
+      <div class="stat-card shipping" [class.active-filter]="currentFilter === 'livraison'" (click)="setFilter('livraison')">
+        <i class="bi bi-truck"></i>
+        <h3>{{ shippingCount }}</h3>
+        <p>En livraison</p>
+      </div>
+
+      <!-- LIVRÉES -->
+      <div class="stat-card delivered" [class.active-filter]="currentFilter === 'livree'" (click)="setFilter('livree')">
+        <i class="bi bi-check-circle-fill"></i>
+        <h3>{{ deliveredCount }}</h3>
+        <p>Livrées</p>
+      </div>
+
+      <!-- ANNULÉES -->
+      <div class="stat-card canceled" [class.active-filter]="currentFilter === 'annulee'" (click)="setFilter('annulee')">
+        <i class="bi bi-x-circle-fill"></i>
+        <h3>{{ canceledCount }}</h3>
+        <p>Annulées</p>
+      </div>
+    </div>
+
+  <!-- ZONE PRINCIPALE -->
+  <div *ngIf="!isLoading" class="animated-fade-in">
+    
+    <!-- BARRE DE FILTRE RAPIDE PAR STATUT -->
+    <div class="orders-filter-bar mb-4">
+      <button class="filter-btn" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">
+        Toutes <samp class="bi bi-receipt"></samp>
+      </button>
+      <button class="filter-btn text-warning" [class.active]="currentFilter === 'en_attente'" (click)="setFilter('en_attente')">
+        En attente <samp class="bi bi-hourglass-split"></samp>
+      </button>
+      <button class="filter-btn text-info" [class.active]="currentFilter === 'preparation'" (click)="setFilter('preparation')">
+        En cuisine <samp class="bi bi-fire"></samp>
+      </button>
+      <button class="filter-btn text-primary" [class.active]="currentFilter === 'livraison'" (click)="setFilter('livraison')">
+        En cours de livraison <samp class="bi bi-truck"></samp>
+      </button>
+      <button class="filter-btn text-success" [class.active]="currentFilter === 'livree'" (click)="setFilter('livree')">
+        Livrées <samp class="bi bi-check-circle-fill"></samp>
+      </button>
+      <button class="filter-btn text-danger" [class.active]="currentFilter === 'annulee'" (click)="setFilter('annulee')">
+        Annulées <samp class="bi bi-x-circle-fill"></samp>
+      </button>
+    </div>
+
+    <!-- CATALOGUE DES COMMANDES -->
+    <div class="row g-4" *ngIf="filteredOrders.length > 0">
+      <div class="col-12 col-xl-10">
+        
+        <div class="order-card p-4 mb-4" *ngFor="let order of filteredOrders" [class.border-completed]="order.status === 'livree'">
+          
+          <!-- HAUT DE CARTE -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-3 header-divider">
+            <div>
+              <span class="text-muted small d-block">Client : <strong class="text-white">{{ order.clientName }}</strong></span>
+              <h3 class="h6 mb-0 fw-bold text-white">#BF-{{ order.id }}</h3>
+              <span class="text-muted text-opacity-70 extreme-small">
+                Reçue le {{ order.created_at | date:'dd MMM yyyy à HH:mm' }}
+              </span>
+            </div>
+
+            <!-- BADGE STATUT SYNCHRO AVEC LE CODE CLIENT -->
+            <div>
+              <span *ngIf="order.status === 'en_attente'" class="status-badge status-pending">
+                <i class="bi bi-hourglass-split me-1"></i> En attente
+              </span>
+              <span *ngIf="order.status === 'preparation'" class="status-badge status-preparing">
+                <i class="bi bi-fire me-1"></i> En cuisine
+              </span>
+              <span *ngIf="order.status === 'livraison'" class="status-badge status-shipping">
+                <i class="bi bi-truck me-1"></i> En livraison
+              </span>
+              <span *ngIf="order.status === 'livree'" class="status-badge status-delivered">
+                <i class="bi bi-check-circle-fill me-1"></i> Livrée
+              </span>
+              <span *ngIf="order.status === 'annulee'" class="status-badge status-canceled">
+                <i class="bi bi-x-circle-fill me-1"></i> Annulée
+              </span>
+            </div>
+          </div>
+
+          <!-- CONTENU DU MILIEU -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="p-3 bg-dark rounded-3 icon-container">
+                <i class="bi bi-bag-fill bag-icon"></i>
+              </div>
+              <div>
+                <p class="mb-1 text-white-50 small fw-semibold">
+                  {{ formatItemsList(order.items) }}
+                </p>
+                <h4 class="h5 mb-0 fw-bold gold-text">{{ order.total_price | number }} FCFA</h4>
+                <span class="text-muted small"><i class="bi bi-telephone-fill text-gold small"></i> {{ order.phone }}</span>
+              </div>
+            </div>
+
+            <!-- ENSEMBLE DE BOUTONS ACTIONS DE PILOTAGE RAPIDE -->
+            <div class="d-flex gap-2">
+              
+              <!-- ÉTAPE 1 : Passer en Cuisine -->
+              <button *ngIf="order.status === 'en_attente'" 
+                      class="btn btn-sm btn-preparing px-4 py-2" 
+                      (click)="updateStatus(order, 'preparation')">
+                <i class="bi bi-fire me-1"></i> Commencer la préparation
+              </button>
+
+              <!-- ÉTAPE 2 : Confier au Livreur -->
+              <button *ngIf="order.status === 'preparation'" 
+                      class="btn btn-sm btn-rider px-4 py-2 text-black" 
+                      (click)="updateStatus(order, 'livraison')">
+                <i class="bi bi-truck me-1"></i> Confier au Livreur
+              </button>
+
+              <!-- ÉTAPE 3 : Clôturer la commande -->
+              <button *ngIf="order.status === 'livraison'" 
+                      class="btn btn-sm btn-success px-4 py-2" 
+                      (click)="updateStatus(order, 'livree')">
+                <i class="bi bi-check-circle-fill me-1"></i> Marquer comme Livrée
+              </button>
+
+              <!-- BOUTON D'ANNULATION -->
+              <button *ngIf="order.status !== 'livree' && order.status !== 'annulee'" 
+                      class="btn btn-sm btn-outline-danger px-3 py-2" 
+                      (click)="updateStatus(order, 'annulee')"
+                      title="Annuler la commande">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+              
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AUCUNE COMMANDE TROUVÉE -->
+    <div class="text-center py-5" *ngIf="filteredOrders.length === 0">
+      <i class="bi bi-receipt text-muted mb-3 empty-icon" style="font-size: 50px;"></i>
+      <h2 class="h4 text-muted">Aucune commande trouvée</h2>
+      <p class="small text-muted mb-4">Il n'y a pas de commande correspondant à cette catégorie de filtrage.</p>
+    </div>
+
+  </div>
+</main>

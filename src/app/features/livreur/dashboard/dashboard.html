@@ -1,0 +1,172 @@
+<div class="driver-page">
+  <div class="driver-bg"></div>
+
+  <div *ngIf="isLoading" class="driver-skeleton">
+    <div class="skeleton-box header-skel"></div>
+    <div class="stats-grid">
+      <div class="skeleton-box stat-skel"></div>
+      <div class="skeleton-box stat-skel"></div>
+      <div class="skeleton-box stat-skel"></div>
+    </div>
+    <div class="skeleton-box list-skel"></div>
+  </div>
+
+  <div class="driver-container" *ngIf="!isLoading">
+    <header class="driver-header">
+      <div class="header-left">
+        <button class="back-btn" (click)="openLogoutModal()">
+          <i class="bi bi-power"></i>
+        </button>
+
+        <button class="icon-btn" [routerLink]="['/notification']">
+          <i class="bi bi-bell-fill"></i>
+          <span class="badge-notif" *ngIf="((unreadCount$ | async) || 0) > 0">
+            {{ unreadCount$ | async }}
+          </span>
+        </button>
+
+        <div class="title-block">
+          <h1>Mes livraisons</h1>
+          <p>Vos commandes assignées pour aujourd'hui</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="applyFilters()"
+            placeholder="Rechercher une commande..."
+          />
+        </div>
+
+        <div class="filter-box">
+          <i class="bi bi-funnel-fill"></i>
+          <select [(ngModel)]="filterStatus" (change)="applyFilters()">
+            <option value="ALL">Tous les statuts</option>
+            <option value="en_attente">En attente</option>
+            <option value="en_cours">En cours</option>
+            <option value="livree">Livrée</option>
+            <option value="annulee">Annulée</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <i class="bi bi-truck"></i>
+        <div>
+          <h3>{{ totalDeliveries }}</h3>
+          <p>Total</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <i class="bi bi-clock-history"></i>
+        <div>
+          <h3>{{ pendingCount }}</h3>
+          <p>En attente</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <i class="bi bi-check2-circle"></i>
+        <div>
+          <h3>{{ deliveredCount }}</h3>
+          <p>Livrées</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="delivery-toolbar">
+      <div class="toolbar-left">
+        <span class="toolbar-chip active" (click)="setQuickFilter('ALL')">Toutes</span>
+        <span class="toolbar-chip" (click)="setQuickFilter('en_attente')">À faire</span>
+        <span class="toolbar-chip" (click)="setQuickFilter('en_cours')">En cours</span>
+        <span class="toolbar-chip" (click)="setQuickFilter('livree')">Terminées</span>
+      </div>
+
+      <div class="toolbar-right">
+        <span class="results-count">{{ filteredDeliveries.length }} résultat(s)</span>
+      </div>
+    </section>
+
+    <div class="delivery-grid-list">
+      <div class="delivery-card" *ngFor="let d of filteredDeliveries">
+        <div class="d-header">
+          <div>
+            <span class="order-id">Commande #{{ d.orderId }}</span>
+            <p class="order-meta">{{ d.createdAt | date:'dd/MM/yyyy à HH:mm' }}</p>
+          </div>
+
+          <span class="status-badge" [ngClass]="d.status">
+            {{ getStatusLabel(d.status) }}
+          </span>
+        </div>
+
+        <div class="d-body">
+          <h4>{{ d.clientName }}</h4>
+          <p><i class="bi bi-geo-alt"></i> {{ d.address }}</p>
+          <p><i class="bi bi-bag-check"></i> {{ d.itemsCount }} article(s)</p>
+          <p><i class="bi bi-person-badge"></i> Client: <strong>{{ d.clientName }}</strong></p>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" [style.width.%]="getProgress(d.status)"></div>
+        </div>
+
+        <div class="d-actions">
+          <button
+            (click)="updateStatus(d, 'en_cours')"
+            [disabled]="d.status === 'en_cours' || d.status === 'livree' || d.status === 'annulee'">
+            Démarrer
+          </button>
+
+          <button
+            (click)="updateStatus(d, 'livree')"
+            class="btn-success"
+            [disabled]="d.status === 'livree' || d.status === 'annulee'">
+            Livrée
+          </button>
+
+          <button
+            (click)="updateStatus(d, 'annulee')"
+            class="btn-danger"
+            [disabled]="d.status === 'livree' || d.status === 'annulee'">
+            Annuler
+          </button>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="filteredDeliveries.length === 0">
+        <i class="bi bi-inbox"></i>
+        <h3>Aucune livraison trouvée</h3>
+        <p>Aucune commande ne correspond à vos filtres.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="logout-overlay" *ngIf="showLogoutModal" (click)="closeLogoutModal()">
+  <div class="logout-modal" (click)="$event.stopPropagation()">
+    <div class="logout-modal-header">
+
+      <button class="logout-close" (click)="closeLogoutModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="logout-modal-body">
+      <h3>Déconnexion</h3>
+      <p>Voulez-vous vraiment quitter votre session maintenant ?</p>
+    </div>
+
+    <div class="logout-modal-footer">
+      <button class="btn-cancel-logout" (click)="closeLogoutModal()">Annuler</button>
+      <button class="btn-confirm-logout" (click)="confirmLogout()">Se déconnecter</button>
+    </div>
+  </div>
+</div>
