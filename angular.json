@@ -21,14 +21,8 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
-                "input": "src/assets",
                 "glob": "**/*",
-                "output": "/assets"
-              },
-              {
-                "input": "public",
-                "glob": "**/*",
-                "output": "/"
+                "input": "public"
               }
             ],
             "styles": [
