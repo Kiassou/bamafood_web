@@ -23,7 +23,7 @@ body {
     position: relative;
 
     /* Ton image est configurée pour couvrir l'écran proprement sans déformation */
-    background-image: url("./assets/images/bamafood_splash.png");
+    background-image: url("/assets/images/bamafood_splash.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
