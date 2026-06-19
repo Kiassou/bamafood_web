@@ -26,7 +26,7 @@ body {
   overflow: hidden;
   background:
     linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.88)),
-    url("/assets/images/bamafood_splash.png");
+    url("assets/images/bamafood_splash.png");
   background-size: cover;
   background-position: center;
   animation: bgZoom 18s infinite alternate ease-in-out;

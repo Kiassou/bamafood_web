@@ -29,7 +29,7 @@ body {
     z-index: -3;
     background:
         linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)),
-        url("/assets/images/bamafood_splash.png");
+        url("assets/images/bamafood_splash.png");
     background-size: cover;
     background-position: center;
     animation: bgZoom 18s infinite alternate ease-in-out;
