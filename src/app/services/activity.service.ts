@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ActivityService {
-  private apiUrl = 'http://localhost:3000/api/activities';
+  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/activities';
 
   constructor(private http: HttpClient) {}
 

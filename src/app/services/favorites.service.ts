@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FavoritesService {
-  private baseUrl = 'http://localhost:3000/api/favorites';
+  private baseUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/favorites';
 
   constructor(private http: HttpClient) {}
 

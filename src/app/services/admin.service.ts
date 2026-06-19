@@ -20,7 +20,7 @@ export interface User {
 })
 export class AdminService {
   // Point d'entrée de notre API d'administration définie à l'Étape 2
-  private apiUrl = 'http://localhost:3000/api/admin';
+  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/admin';
 
   constructor(private http: HttpClient) {}
 

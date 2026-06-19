@@ -23,7 +23,7 @@ export interface Order {
   providedIn: 'root'
 })
 export class OrdersService {
-  private apiUrl = 'http://localhost:3000/api/orders';
+  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/orders';
 
   constructor(private http: HttpClient) {}
 

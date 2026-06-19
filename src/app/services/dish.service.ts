@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DishService {
-  private apiUrl = 'http://localhost:3000/api/dishes'; // Ton API Node.js
+  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/dishes'; // Ton API Node.js
 
   constructor(private http: HttpClient) {}
 
