@@ -7,7 +7,7 @@ export class DashboardService {
   downloadPdf(value: any) {
     throw new Error('Method not implemented.');
   }
-  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/manager';
+  private apiUrl = 'http://localhost:3000/api/manager';
 
   constructor(private http: HttpClient) {}
 

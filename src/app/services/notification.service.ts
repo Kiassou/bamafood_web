@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/notifications';
+  private apiUrl = 'http://localhost:3000/api/notifications';
 
   // Le "flux" qui contient le nombre de messages non lus
   private unreadCountSubject = new BehaviorSubject<number>(0);

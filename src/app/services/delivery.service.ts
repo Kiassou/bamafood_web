@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class DeliveryService {
-  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/deliveries';
-  private usersUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/users';
+  private apiUrl = 'http://localhost:3000/api/deliveries';
+  private usersUrl = 'http://localhost:3000/api/users';
 
   constructor(private http: HttpClient) {}
 

@@ -19,12 +19,10 @@ export interface User {
   providedIn: 'root'
 })
 export class AdminService {
-  // Point d'entrée de notre API d'administration définie à l'Étape 2
-  private apiUrl = 'https://overrun-harpist-wolverine.ngrok-free.dev/api/admin';
+
+  private apiUrl = 'http://localhost:3000/api/admin';
 
   constructor(private http: HttpClient) {}
-
-  // Génération dynamique des en-têtes d'authentification JWT
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     return new HttpHeaders({
